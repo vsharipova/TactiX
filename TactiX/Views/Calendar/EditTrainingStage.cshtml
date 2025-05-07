@@ -1,0 +1,144 @@
+﻿@model TactiX.Models.ViewModels.TrainingStageEditDto
+@{
+    ViewData["Title"] = "Редактирование упражнения";
+    Layout = "_Layout";
+}
+
+<div class="container mt-4">
+    <h2>Редактирование упражнения</h2>
+
+    <form id="editForm" asp-action="EditTrainingStage" method="post">
+        <input type="hidden" asp-for="TrainingStageId" />
+        <input type="hidden" asp-for="TrainingId" />
+
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4>Основные данные</h4>
+
+                        <div class="mb-3">
+                            <label asp-for="StageName" class="form-label">Название*</label>
+                            <input asp-for="StageName" class="form-control" required>
+                            <span asp-validation-for="StageName" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="StageType" class="form-label">Тип*</label>
+                            <select asp-for="StageType" class="form-select" required>
+                                <option value="Точность">Точность</option>
+                                <option value="Скорость">Скорость</option>
+                                <option value="Комбинация">Комбинация</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Hit Factor</label>
+                            <input asp-for="HitFactor" id="hitFactorResult"
+                                   class="form-control" readonly>
+                            <small class="text-muted">(5×A + 3×C + 1×D) / время</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <h4>Время и попадания</h4>
+
+                        <div class="mb-3">
+                            <label asp-for="StageTimeInput" class="form-label">Время (секунды + милисекунды)*</label>
+                            <input asp-for="StageTimeInput" id="stageTime"
+                                   class="form-control" required min="0.1" step="0.01">
+                            <span asp-validation-for="StageTimeInput" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="AlphasCount" class="form-label">Alpha*</label>
+                            <input asp-for="AlphasCount" id="alphasCount"
+                                   class="form-control" required min="0">
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="CharliesCount" class="form-label">Charlie*</label>
+                            <input asp-for="CharliesCount" id="charliesCount"
+                                   class="form-control" required min="0">
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="DeltasCount" class="form-label">Delta*</label>
+                            <input asp-for="DeltasCount" id="deltasCount"
+                                   class="form-control" required min="0">
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="MissesCount" class="form-label">Miss*</label>
+                            <input asp-for="MissesCount" id="deltasCount"
+                                   class="form-control" required min="0">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <h4>Количество мишеней</h4>
+
+                        <div class="mb-3">
+                            <label asp-for="NumOfSpots" class="form-label">Ipsc мишень*</label>
+                            <input asp-for="NumOfSpots" class="form-control" required min="0">
+                            <span asp-validation-for="NumOfSpots" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="NumOfPoppers" class="form-label">Поппер*</label>
+                            <input asp-for="NumOfPoppers" class="form-control" required min="0">
+                            <span asp-validation-for="NumOfPoppers" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="NumOfPlates" class="form-label">Тарелка*</label>
+                            <input asp-for="NumOfPlates" class="form-control" required min="0">
+                            <span asp-validation-for="NumOfPlates" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer">
+                <button type="submit" class="btn btn-primary">Сохранить</button>
+                <a asp-action="TrainingDetails" asp-route-id="@Model.TrainingId" class="btn btn-secondary">Отмена</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            function calculateHitFactor() {
+                const alphas = Math.max(0, parseInt($('#alphasCount').val()) || 0);
+                const charlies = Math.max(0, parseInt($('#charliesCount').val()) || 0);
+                const deltas = Math.max(0, parseInt($('#deltasCount').val()) || 0);
+                const time = Math.max(0.1, parseFloat($('#stageTime').val()) || 0.1);
+
+                const hitFactor = (5 * alphas + 3 * charlies + 1 * deltas) / time;
+                $('#hitFactorResult').val(hitFactor.toFixed(4));
+                return hitFactor;
+            }
+
+            calculateHitFactor();
+
+            $('#alphasCount, #charliesCount, #deltasCount, #stageTime').on('input', function () {
+
+                calculateHitFactor();
+            });
+
+            $('input[type="number"]').on('change', function () {
+                if (this.value < 0) this.value = 0;
+            });
+
+            $('#editForm').submit(function () {
+                const hitFactor = calculateHitFactor();
+                $('#hitFactorResult').val(hitFactor.toFixed(4));
+                return true;
+            });
+        });
+    </script>
+}

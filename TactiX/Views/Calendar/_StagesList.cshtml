@@ -1,0 +1,68 @@
+﻿@model List<TactiX.Models.MatchStage>
+
+@if (Model.Any())
+{
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Название</th>
+                    <th>Тип</th>
+                    <th>Hit Factor</th>
+                    <th>Время</th>
+                    <th>Alpha</th>
+                    <th>Charlie</th>
+                    <th>Delta</th>
+                    <th>Miss</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var stage in Model)
+                {
+                    <tr>
+                        <td>@stage.StageName</td>
+                        <td>@GetStageTypeName(stage.StageType)</td>
+                        <td>@stage.HitFactor.ToString("F4")</td>
+                        <td>@stage.StageTime.ToString(@"ss\.ff") сек</td>
+                        <td>@stage.AlphasCount</td>
+                        <td>@stage.DeltasCount</td>
+                        <td>@stage.CharliesCount</td>
+                        <td>@stage.MissesCount</td>
+                        <td>
+                            <a asp-action="EditStage" asp-route-id="@stage.MatchStageId"
+                               class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <form asp-action="DeleteStage" asp-route-id="@stage.MatchStageId" method="post"
+                                  onsubmit="return confirm('Удалить это упражнение?')">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="alert alert-info">
+        Нет добавленных упражнений
+    </div>
+}
+
+@functions {
+    string GetStageTypeName(long type)
+    {
+        return type switch
+        {
+            1 => "Короткое",
+            2 => "Среднее",
+            3 => "Длинное",
+            _ => "Неизвестный"
+        };
+    }
+}

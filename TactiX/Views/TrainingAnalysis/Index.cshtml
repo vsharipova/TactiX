@@ -1,0 +1,292 @@
+﻿@model TactiX.Models.ViewModels.TrainingAnalysisDto
+
+@{
+    ViewData["Title"] = "Анализ тренировки";
+}
+
+<div class="training-analysis-container">
+    <div class="navigation-buttons">
+        <a href="@Url.Action("TrainingAnalysisList", "TrainingAnalysis")" class="btn btn-back">
+            <i class="fas fa-arrow-left"></i> К списку тренировок
+        </a>
+    </div>
+
+    <div class="analysis-header">
+        <h2><i class="fas fa-chart-pie"></i> Анализ тренировки</h2>
+        <div class="training-title">
+            <span>@Model.TrainingName</span>
+            <small>@Model.TrainingDate.ToString("dd.MM.yyyy")</small>
+            <span class="training-type-badge @Model.TrainingType.ToLower()">@Model.TrainingType</span>
+            @if (Model.IsBestPerformance)
+            {
+                <span class="best-badge"><i class="fas fa-trophy"></i> Лучший результат</span>
+            }
+        </div>
+    </div>
+
+    <div class="metrics-grid">
+        <div class="metric-card performance-card">
+            <div class="metric-header">
+                <i class="fas fa-star"></i>
+                <h4>Оценка тренировки</h4>
+            </div>
+            <div class="performance-value">
+                @Model.PerformanceScore.ToString("0.0")
+                <div class="performance-scale">
+                    <div class="scale-fill" style="width: @(Model.PerformanceScore * 10)%"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-header">
+                <i class="fas fa-bullseye"></i>
+                <h4>Всего выстрелов</h4>
+            </div>
+            <div class="metric-value">
+                @Model.TotalShots
+            </div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-header">
+                <i class="fas fa-tachometer-alt"></i>
+                <h4>Средний Hit Factor</h4>
+            </div>
+            <div class="metric-value">
+                @Model.AvgHitFactor.ToString("0.00")
+            </div>
+        </div>
+    </div>
+
+    <div class="charts-grid">
+        <div class="chart-card">
+            <div class="chart-header">
+                <h4><i class="fas fa-chart-pie"></i> Распределение попаданий</h4>
+            </div>
+            <div class="chart-container">
+                <canvas id="hitsDistributionChart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-card">
+            <div class="chart-header">
+                <h4><i class="fas fa-chart-line"></i> Прогресс по тренировкам</h4>
+            </div>
+            <div class="chart-container">
+                <canvas id="progressChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="advice-card">
+        <div class="advice-header">
+            <h4><i class="fas fa-lightbulb"></i> Рекомендации</h4>
+        </div>
+        <div class="advice-content">
+            <p>@Model.ComparisonAdvice</p>
+            <div class="training-type-advice">
+                @if (Model.TrainingType == "Точность")
+                {
+                    <p><i class="fas fa-crosshairs"></i> Сосредоточьтесь на плавном нажатии спуска</p>
+                }
+                else if (Model.TrainingType == "Скорость")
+                {
+                    <p><i class="fas fa-running"></i> Уделите внимание быстрому приобретению прицельной картины</p>
+                }
+                else if (Model.TrainingType == "Комбинация")
+                {
+                    <p><i class="fas fa-random"></i> Тренируйте переходы между мишенями</p>
+                }
+                else if (Model.TrainingType == "Силовая")
+                {
+                    <p><i class="fas fa-dumbbell"></i> Укрепляйте хват и мышцы предплечья</p>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="comparison-card">
+        <div class="comparison-header">
+            <h4><i class="fas fa-exchange-alt"></i> Сравнение с другими тренировками</h4>
+        </div>
+        <div class="comparison-controls">
+            <select id="compareSelect" class="form-select">
+                <option value="">Выберите тренировку для сравнения</option>
+                @foreach (var training in ViewBag.UserTrainings as IEnumerable<TactiX.Models.Training>)
+                {
+                    if (training.TrainingId != Model.TrainingId)
+                    {
+                        <option value="@training.TrainingId">@training.TrainingDate</option>
+                    }
+                }
+            </select>
+            <button id="compareBtn" class="btn btn-primary">
+                <i class="fas fa-chart-line"></i> Сравнить
+            </button>
+        </div>
+        <div id="comparisonResults" class="comparison-results">
+        </div>
+    </div>
+
+    <div class="additional-info">
+        <div class="info-card">
+            <i class="fas fa-clock"></i>
+            <span>Последний анализ: @Model.CalculatedAt.ToString("dd.MM.yyyy HH:mm")</span>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/traininganalysis.css">
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const hitsCtx = document.getElementById('hitsDistributionChart').getContext('2d');
+            const hitsChart = new Chart(hitsCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['Альфа', 'Чарли', 'Дельта', 'Промахи'],
+                    datasets: [{
+                        data: [
+        @Model.AlphaPercentage.ToString(System.Globalization.CultureInfo.InvariantCulture),
+        @Model.CharliePercentage.ToString(System.Globalization.CultureInfo.InvariantCulture),
+        @Model.DeltaPercentage.ToString(System.Globalization.CultureInfo.InvariantCulture),
+        @Model.MissPercentage.ToString(System.Globalization.CultureInfo.InvariantCulture)
+                                ],
+                        backgroundColor: [
+                            'rgba(26, 115, 232, 0.8)',
+                            'rgba(66, 133, 244, 0.8)',
+                            'rgba(92, 141, 245, 0.8)',
+                            'rgba(117, 117, 117, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(26, 115, 232, 1)',
+                            'rgba(66, 133, 244, 1)',
+                            'rgba(92, 141, 245, 1)',
+                            'rgba(117, 117, 117, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return `${context.label}: ${context.raw.toFixed(2)}%`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const progressCtx = document.getElementById('progressChart').getContext('2d');
+            const progressChart = new Chart(progressCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Неделя 1', 'Неделя 2', 'Неделя 3', 'Неделя 4'],
+                    datasets: [{
+                        label: 'Рейтинг перформанса',
+                        data: [6.5, 7.2, 7.8, @Model.PerformanceScore.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture)],
+                        borderColor: 'rgba(69, 123, 157, 1)',
+                        backgroundColor: 'rgba(69, 123, 157, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            min: 5,
+                            max: 10
+                        }
+                    }
+                }
+            });
+
+            document.getElementById('compareBtn').addEventListener('click', async function () {
+                const selectedTrainingId = document.getElementById('compareSelect').value;
+                if (!selectedTrainingId) {
+                    alert('Выберите тренировку для сравнения');
+                    return;
+                }
+
+                const resultsContainer = document.getElementById('comparisonResults');
+                resultsContainer.innerHTML = '<div class="loading">Загрузка...</div>';
+
+                try {
+                    const response = await fetch(`/api/TrainingAnalysis/compare?baseTrainingId=${@Model.TrainingId}&compareWithIds=${selectedTrainingId}`);
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        throw new Error(errorText || `Ошибка HTTP! Статус: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    const comparison = data[0];
+                    const trainingDate = comparison.ComparedTrainingDate
+                        ? new Date(comparison.ComparedTrainingDate).toLocaleDateString()
+                        : 'нет даты';
+
+                    resultsContainer.innerHTML = `
+                                <div class="comparison-result">
+                                    <h5>Сравнение с ${comparison.ComparedTrainingName || 'неизвестная тренировка'} (${trainingDate})</h5>
+                                    <div class="comparison-metrics">
+                                        <div class="comparison-metric ${comparison.AlphaDiff > 0 ? 'positive' : 'negative'}">
+                                            <span>Альфа:</span>
+                                            <strong>${comparison.AlphaDiff > 0 ? '+' : ''}${comparison.AlphaDiff.toFixed(2)}%</strong>
+                                        </div>
+                                        <div class="comparison-metric ${comparison.CharlieDiff > 0 ? 'positive' : 'negative'}">
+                                            <span>Чарли:</span>
+                                            <strong>${comparison.CharlieDiff > 0 ? '+' : ''}${comparison.CharlieDiff.toFixed(2)}%</strong>
+                                        </div>
+                                        <div class="comparison-metric ${comparison.DeltaDiff > 0 ? 'positive' : 'negative'}">
+                                            <span>Дельта:</span>
+                                            <strong>${comparison.DeltaDiff > 0 ? '+' : ''}${comparison.DeltaDiff.toFixed(2)}%</strong>
+                                        </div>
+                                        <div class="comparison-metric ${comparison.MissDiff < 0 ? 'positive' : 'negative'}">
+                                            <span>Промахи:</span>
+                                            <strong>${comparison.MissDiff > 0 ? '+' : ''}${comparison.MissDiff.toFixed(2)}%</strong>
+                                        </div>
+                                        <div class="comparison-metric ${comparison.HitFactorDiff > 0 ? 'positive' : 'negative'}">
+                                            <span>Hit Factor:</span>
+                                            <strong>${comparison.HitFactorDiff > 0 ? '+' : ''}${comparison.HitFactorDiff.toFixed(2)}</strong>
+                                        </div>
+                                    </div>
+                                    <div class="comparison-summary">
+                                        <strong>Результат:</strong>
+                                        ${comparison.ComparisonResult === 'better' ? 'Лучше' :
+                            comparison.ComparisonResult === 'worse' ? 'Хуже' : 'Похоже'}
+                                    </div>
+                                    <div class="comparison-advice">
+                                        <strong>Рекомендации:</strong>
+                                        <p>${comparison.Advice || 'Нет рекомендаций'}</p>
+                                    </div>
+                                </div>
+                            `;
+                } catch (error) {
+                    console.error('Ошибка сравнения:', error);
+                    resultsContainer.innerHTML = `
+                                <div class="error">
+                                    <i class="fas fa-exclamation-triangle"></i> ${error.message}
+                                    <br><small>Попробуйте выбрать другую тренировку для сравнения</small>
+                                </div>
+                            `;
+                }
+            });
+        });
+    </script>
+}

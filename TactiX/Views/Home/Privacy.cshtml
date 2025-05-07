@@ -1,0 +1,63 @@
+﻿@{
+    ViewData["Title"] = "Политика конфиденциальности";
+    Layout = "_Layout";
+}
+
+<div class="privacy-container">
+    <a href="@Url.Action("Index", "Home")" class="btn btn-back">
+        <i class="fas fa-home"></i> На главную
+    </a>
+    <div class="privacy-header">
+        <h1><span class="tacti">Tacti</span><span class="x-red">X</span> — @ViewData["Title"]</h1>
+        <p>Последнее обновление: 15 марта 2025 года</p>
+    </div>
+
+    <div class="privacy-content">
+        <section>
+            <h2><i class="fas fa-shield-alt"></i> 1. Какие данные мы собираем</h2>
+            <p>При использовании сервиса TactiX мы можем собирать следующую информацию:</p>
+            <ul>
+                <li>Личные данные (имя, фамилия, email)</li>
+                <li>Данные о вашей стрелковой активности (результаты тренировок и соревнований)</li>
+                <li>Технические данные (IP-адрес, тип устройства, cookies)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2><i class="fas fa-lock"></i> 2. Как мы используем данные</h2>
+            <p>Ваши данные необходимы для:</p>
+            <ul>
+                <li>Предоставления персонализированной статистики</li>
+                <li>Улучшения работы сервиса</li>
+                <li>Обеспечения безопасности аккаунта</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2><i class="fas fa-exchange-alt"></i> 3. Передача данных третьим лицам</h2>
+            <p>Мы не продаем и не передаем ваши личные данные сторонним компаниям, за исключением:</p>
+            <ul>
+                <li>Случаев, требуемых законом</li>
+                <li>Сервисов-партнеров, обеспечивающих работу TactiX (анонимизированные данные)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2><i class="fas fa-cookie-bite"></i> 4. Использование cookies</h2>
+            <p>Сервис использует cookies для:</p>
+            <ul>
+                <li>Авторизации пользователей</li>
+                <li>Сохранения настроек интерфейса</li>
+            </ul>
+        </section>
+
+        <div class="privacy-footer">
+            <p>Если у вас есть вопросы, свяжитесь с нами: <a href="mailto:privacy@tactix.com">tactix.help@rambler.ru</a></p>
+            <p>© 2025 TactiX. Все права защищены.</p>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/privacy.css">
+}

@@ -1,0 +1,230 @@
+﻿@model TactiX.Models.ViewModels.MatchAnalysisDto
+
+<div class="match-analysis-container">
+    <div class="navigation-buttons">
+        <a href="@Url.Action("MatchAnalysisList", "MatchAnalysis")" class="btn btn-back">
+            <i class="fas fa-arrow-left"></i> К списку матчей
+        </a>
+    </div>
+
+    <div class="analysis-header">
+        <h2><i class="fas fa-chart-pie"></i> Анализ матча</h2>
+        <div class="match-title">
+            <span>@Model.MatchName</span>
+            <small>@Model.MatchDate.ToString("dd.MM.yyyy")</small>
+            @if (Model.IsBestPerformance)
+            {
+                <span class="best-badge"><i class="fas fa-trophy"></i> Лучший результат</span>
+            }
+        </div>
+    </div>
+
+    <div class="metrics-grid">
+        <div class="metric-card performance-card">
+            <div class="metric-header">
+                <i class="fas fa-star"></i>
+                <h4>Рейтинг перформанса</h4>
+            </div>
+            <div class="performance-value" style="color: var(--dark);">
+                @Model.PerformanceScore.ToString("0.0")
+            </div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-header">
+                <i class="fas fa-bullseye"></i>
+                <h4>Всего выстрелов</h4>
+            </div>
+            <div class="metric-value">
+                @Model.TotalShots
+            </div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-header">
+                <i class="fas fa-tachometer-alt"></i>
+                <h4>Средний Hit Factor</h4>
+            </div>
+            <div class="metric-value">
+                @Model.AvgHitFactor.ToString("0.00")
+            </div>
+        </div>
+    </div>
+
+    <div class="chart-card">
+        <div class="chart-header">
+            <h4><i class="fas fa-chart-pie"></i> Распределение попаданий</h4>
+        </div>
+        <div class="chart-container" style="height: 350px;">
+            <canvas id="hitsChart"></canvas>
+        </div>
+    </div>
+
+    <div class="advice-card">
+        <div class="advice-header">
+            <h4><i class="fas fa-lightbulb"></i> Рекомендации</h4>
+        </div>
+        <div class="advice-content">
+            <p>@Model.ComparisonAdvice</p>
+        </div>
+    </div>
+
+    <div class="comparison-card">
+        <div class="comparison-header">
+            <h4><i class="fas fa-exchange-alt"></i> Сравнение с другими матчами</h4>
+        </div>
+        <div class="comparison-controls">
+            <select id="compareSelect" class="form-select">
+                <option value="">Выберите матч для сравнения</option>
+                @foreach (var match in ViewBag.UserMatches as IEnumerable<Match>)
+                {
+                    if (match.MatchId != Model.MatchId)
+                    {
+                        <option value="@match.MatchId">@match.MatchName (@match.MatchDate.ToString("dd.MM.yyyy"))</option>
+                    }
+                }
+            </select>
+            <button id="compareBtn" class="btn btn-primary">
+                <i class="fas fa-chart-line"></i> Сравнить
+            </button>
+        </div>
+        <div id="comparisonResults" class="comparison-results">
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/matchanalysis.css">
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const hitsCtx = document.getElementById('hitsChart').getContext('2d');
+            const hitsChart = new Chart(hitsCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['Альфа', 'Чарли', 'Дельта', 'Промахи'],
+                    datasets: [{
+                        data: [
+        @Model.AlphaPercentage.ToString(System.Globalization.CultureInfo.InvariantCulture),
+        @Model.CharliePercentage.ToString(System.Globalization.CultureInfo.InvariantCulture),
+        @Model.DeltaPercentage.ToString(System.Globalization.CultureInfo.InvariantCulture),
+        @Model.MissPercentage.ToString(System.Globalization.CultureInfo.InvariantCulture)
+                                ],
+                        backgroundColor: [
+                            'rgba(26, 115, 232, 0.8)',
+                            'rgba(66, 133, 244, 0.8)',
+                            'rgba(92, 141, 245, 0.8)',
+                            'rgba(29, 53, 87, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(26, 115, 232, 1)',
+                            'rgba(66, 133, 244, 1)',
+                            'rgba(92, 141, 245, 1)',
+                            'rgba(29, 53, 87, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return `${context.label}: ${context.raw.toFixed(2)}%`;
+                                }
+                            }
+                        }
+                    },
+                    animation: {
+                        animateScale: true,
+                        animateRotate: true
+                    }
+                }
+            });
+
+            document.getElementById('compareBtn').addEventListener('click', async function () {
+                const selectedMatchId = document.getElementById('compareSelect').value;
+                if (!selectedMatchId) {
+                    alert('Выберите матч для сравнения');
+                    return;
+                }
+
+                const resultsContainer = document.getElementById('comparisonResults');
+                resultsContainer.innerHTML = '<div class="loading">Загрузка...</div>';
+
+                try {
+                    const response = await fetch(`/api/MatchAnalysis/compare?baseMatchId=${@Model.MatchId}&compareWithIds=${selectedMatchId}`);
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        throw new Error(errorText || `HTTP error! status: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+
+                    if (!data || data.length === 0) {
+                        throw new Error('Нет данных для сравнения');
+                    }
+
+                    const comparison = data[0];
+                    const matchDate = comparison.ComparedMatchDate
+                        ? new Date(comparison.ComparedMatchDate).toLocaleDateString()
+                        : 'нет даты';
+
+                    resultsContainer.innerHTML = `
+                                <div class="comparison-result">
+                                    <h5>Сравнение с ${comparison.ComparedMatchName || 'неизвестный матч'} (${matchDate})</h5>
+                                    <div class="comparison-metrics">
+                                        <div class="comparison-metric ${comparison.AlphaDiff > 0 ? 'positive' : 'negative'}">
+                                            <span>Альфа:</span>
+                                            <strong>${comparison.AlphaDiff > 0 ? '+' : ''}${comparison.AlphaDiff.toFixed(2)}%</strong>
+                                        </div>
+                                        <div class="comparison-metric ${comparison.CharlieDiff > 0 ? 'positive' : 'negative'}">
+                                            <span>Чарли:</span>
+                                            <strong>${comparison.CharlieDiff > 0 ? '+' : ''}${comparison.CharlieDiff.toFixed(2)}%</strong>
+                                        </div>
+                                        <div class="comparison-metric ${comparison.DeltaDiff > 0 ? 'positive' : 'negative'}">
+                                            <span>Дельта:</span>
+                                            <strong>${comparison.DeltaDiff > 0 ? '+' : ''}${comparison.DeltaDiff.toFixed(2)}%</strong>
+                                        </div>
+                                        <div class="comparison-metric ${comparison.MissDiff < 0 ? 'positive' : 'negative'}">
+                                            <span>Промахи:</span>
+                                            <strong>${comparison.MissDiff > 0 ? '+' : ''}${comparison.MissDiff.toFixed(2)}%</strong>
+                                        </div>
+                                        <div class="comparison-metric ${comparison.HitFactorDiff > 0 ? 'positive' : 'negative'}">
+                                            <span>Hit Factor:</span>
+                                            <strong>${comparison.HitFactorDiff > 0 ? '+' : ''}${comparison.HitFactorDiff.toFixed(2)}</strong>
+                                        </div>
+                                    </div>
+                                    <div class="comparison-summary">
+                                        <strong>Результат:</strong>
+                                        ${comparison.ComparisonResult === 'better' ? 'Лучше' :
+                            comparison.ComparisonResult === 'worse' ? 'Хуже' : 'Похоже'}
+                                    </div>
+                                    <div class="comparison-advice">
+                                        <strong>Рекомендации:</strong>
+                                        <p>${comparison.Advice || 'Нет рекомендаций'}</p>
+                                    </div>
+                                </div>
+                            `;
+                } catch (error) {
+                    console.error('Ошибка сравнения:', error);
+                    resultsContainer.innerHTML = `
+                                <div class="error">
+                                    <i class="fas fa-exclamation-triangle"></i> ${error.message}
+                                    <br><small>Попробуйте выбрать другой матч для сравнения</small>
+                                </div>
+                            `;
+                }
+            });
+        });
+    </script>
+}

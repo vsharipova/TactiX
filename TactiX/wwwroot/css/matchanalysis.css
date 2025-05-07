@@ -1,0 +1,252 @@
+﻿:root {
+    --primary: #e63946;
+    --secondary: #457b9d;
+    --dark: #1d3557;
+    --light: #f1faee;
+    --accent: #a8dadc;
+    --alpha-color: #1a73e8; 
+    --charlie-color: #4285f4; 
+    --delta-color: #5c8df5; 
+    --miss-color: #1d3557;
+}
+
+.match-analysis-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    color: #333;
+    position: relative;
+}
+
+.navigation-buttons {
+    margin-bottom: 20px;
+}
+
+.btn-back {
+    background: var(--secondary);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s;
+}
+
+    .btn-back:hover {
+        background: var(--dark);
+        color: white;
+    }
+
+.analysis-header {
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid var(--accent);
+}
+
+    .analysis-header h2 {
+        color: var(--dark);
+        margin-bottom: 10px;
+    }
+
+.match-title {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+    .match-title span {
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: var(--dark);
+    }
+
+    .match-title small {
+        color: #6c757d;
+    }
+
+.best-badge {
+    background: var(--primary);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.metric-card {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    border: 1px solid #eee;
+}
+
+.performance-card {
+    grid-column: span 1;
+}
+
+.metric-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+    color: var(--secondary);
+}
+
+    .metric-header i {
+        font-size: 1.2rem;
+    }
+
+    .metric-header h4 {
+        margin: 0;
+        font-size: 1.1rem;
+    }
+
+.metric-value {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--dark);
+    text-align: center;
+}
+
+.performance-value {
+    font-size: 3rem;
+    font-weight: bold;
+    text-align: center;
+    margin: 15px 0;
+}
+
+.chart-card {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    border: 1px solid #eee;
+}
+
+.chart-header {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--secondary);
+}
+
+    .chart-header h4 {
+        margin: 0;
+        font-size: 1.1rem;
+    }
+
+.advice-card {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    border: 1px solid #eee;
+}
+
+.advice-header {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--secondary);
+}
+
+    .advice-header h4 {
+        margin: 0;
+        font-size: 1.1rem;
+    }
+
+.advice-content {
+    background: var(--light);
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid var(--primary);
+}
+
+.comparison-card {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    border: 1px solid #eee;
+}
+
+.comparison-header {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--secondary);
+}
+
+    .comparison-header h4 {
+        margin: 0;
+        font-size: 1.1rem;
+    }
+
+.comparison-controls {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.comparison-results {
+    min-height: 100px;
+    border: 1px dashed #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    background: #f9f9f9;
+}
+
+.chart-container {
+    position: relative;
+    margin: auto;
+    width: 80%;
+    max-width: 500px;
+}
+
+.loading {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+}
+
+.error {
+    color: #dc3545;
+    padding: 15px;
+    background: #f8d7da;
+    border-radius: 5px;
+}
+
+.comparison-metric {
+    padding: 8px;
+    margin: 5px 0;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+}
+
+    .comparison-metric.positive {
+        background-color: rgba(40, 167, 69, 0.1);
+    }
+
+    .comparison-metric.negative {
+        background-color: rgba(220, 53, 69, 0.1);
+    }

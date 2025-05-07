@@ -1,0 +1,42 @@
+﻿@model IEnumerable<TactiX.Models.Training>
+
+<div class="trainings-list-container">
+    <div class="navigation-buttons">
+        <a href="@Url.Action("Index", "Home")" class="btn btn-back">
+            <i class="fas fa-home"></i> На главную
+        </a>
+        <a href="@Url.Action("ExportAllTrainingsAnalysis")" class="btn btn-export">
+            <i class="fas fa-file-word"></i> Выгрузить отчет об анализе всех тренировок
+        </a>
+    </div>
+
+    <div class="trainings-list-header">
+        <h2><i class="fas fa-dumbbell"></i> Выберите тренировку для анализа</h2>
+    </div>
+
+    <div class="trainings-list-card">
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger">@TempData["Error"]</div>
+        }
+
+        <div class="trainings-grid">
+            @foreach (var training in Model)
+            {
+                <a asp-action="Analyze" asp-route-trainingId="@training.TrainingId" class="training-card">
+                    <div class="training-card-header">
+                        <h5>@training.TrainingDate</h5>
+                        <span class="training-type @training.TypeOfTraining.ToLower()">@training.TypeOfTraining</span>
+                    </div>
+                    <div class="training-card-footer">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </a>
+            }
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/traininglist.css">
+}

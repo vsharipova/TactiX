@@ -1,0 +1,94 @@
+﻿.privacy-container {
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.privacy-header {
+    text-align: center;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #a8dadc;
+    padding-bottom: 20px;
+}
+
+    .privacy-header h1 {
+        font-family: 'Orbitron', sans-serif;
+        color: #1d3557;
+    }
+
+.tacti {
+    color: #1d3557;
+}
+
+.x-red {
+    color: #e63946;
+}
+
+.privacy-content section {
+    margin-bottom: 25px;
+}
+
+.privacy-content h2 {
+    color: #457b9d;
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+}
+
+    .privacy-content h2 i {
+        margin-right: 10px;
+        color: #e63946;
+    }
+
+.privacy-content ul {
+    padding-left: 20px;
+    margin-bottom: 15px;
+}
+
+.privacy-content li {
+    margin-bottom: 8px;
+    line-height: 1.5;
+}
+
+.privacy-footer {
+    margin-top: 40px;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #777;
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+}
+
+    .privacy-footer a {
+        color: #e63946;
+        text-decoration: none;
+    }
+
+btn-back {
+    background: var(--secondary);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-back:hover {
+    background: var(--dark);
+    color: white;
+}
+
+.privacy-container {
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    position: relative;
+}

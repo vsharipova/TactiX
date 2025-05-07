@@ -1,0 +1,97 @@
+﻿@{
+    Layout = null;
+}
+@using TactiX.Models.ViewModels
+@model RegisterViewModel
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TactiX — Регистрация</title>
+    <link rel="stylesheet" href="~/css/auth.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&family=Orbitron:wght@500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="auth-background"></div>
+    <div class="auth-container">
+        <div class="logo-container">
+            <i class="fas fa-bullseye logo-icon"></i>
+            <h1>Tacti<span>X</span></h1>
+            <p>Система анализа результатов практической стрельбы</p>
+        </div>
+
+        <div class="form-container">
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success">
+                    @TempData["SuccessMessage"]
+                </div>
+            }
+
+            <form asp-action="Register" method="post">
+                <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+                <div class="input-group">
+                    <input asp-for="Name" required>
+                    <label asp-for="Name">Имя</label>
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+
+                <div class="input-group">
+                    <input asp-for="Surname" required>
+                    <label asp-for="Surname">Фамилия</label>
+                    <span asp-validation-for="Surname" class="text-danger"></span>
+                </div>
+
+                <div class="input-group">
+                    <input asp-for="Email" required>
+                    <label asp-for="Email">Email</label>
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="input-group">
+                    <input asp-for="Password" type="password" minlength="8" required>
+                    <label asp-for="Password">Пароль</label>
+                    <span class="toggle-password" onclick="togglePassword('Password')">👁️</span>
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+                <div class="input-group">
+                    <input asp-for="ConfirmPassword" type="password" required>
+                    <label asp-for="ConfirmPassword">Подтвердите пароль</label>
+                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                </div>
+
+                <div class="input-group">
+                    <select asp-for="PracticeLevel" required>
+                        <option value="beginner">Новичок</option>
+                        <option value="amateur">Любитель</option>
+                        <option value="professional">Профессионал</option>
+                    </select>
+                    <label asp-for="PracticeLevel">Уровень подготовки</label>
+                </div>
+
+                <button type="submit" class="btn-tactix">Зарегистрироваться</button>
+
+                <div class="auth-footer">
+                    Уже есть аккаунт? <a asp-action="Login">Войти</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function togglePassword(fieldId) {
+            const input = document.getElementById(fieldId);
+            if (input.type === 'password') {
+                input.type = 'text';
+            } else {
+                input.type = 'password';
+            }
+        }
+    </script>
+</body>
+</html>

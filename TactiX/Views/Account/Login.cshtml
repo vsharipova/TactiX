@@ -1,0 +1,71 @@
+﻿@{
+    Layout = null; // Отключаем стандартный Layout
+}
+@using TactiX.Models.ViewModels
+@model LoginViewModel
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TactiX — Вход</title>
+    <link rel="stylesheet" href="~/css/auth.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&family=Orbitron:wght@500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="auth-background"></div>
+    <div class="auth-container">
+        <div class="logo-container">
+            <i class="fas fa-bullseye logo-icon"></i>
+            <h1>Tacti<span>X</span></h1>
+            <p>Система анализа результатов практической стрельбы</p>
+        </div>
+
+        <div class="form-container">
+            <form asp-action="Login" method="post">
+                <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+                <div class="input-group">
+                    <input asp-for="Email" class="form-control" required>
+                    <label asp-for="Email">Email</label>
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="input-group">
+                    <input asp-for="Password" type="password" class="form-control" required>
+                    <label asp-for="Password">Пароль</label>
+                    <span class="toggle-password" onclick="togglePassword('Password')">👁️</span>
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="RememberMe">
+                        <input asp-for="RememberMe">
+                        Запомнить меня
+                    </label>
+                </div>
+
+                <button type="submit" class="btn-shoot">Войти</button>
+
+                <div class="auth-footer">
+                    <a asp-action="Register">Регистрация</a> |
+                    <a asp-action="ForgotPassword">Забыли пароль?</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function togglePassword(fieldId) {
+            const input = document.getElementById(fieldId);
+            if (input.type === 'password') {
+                input.type = 'text';
+            } else {
+                input.type = 'password';
+            }
+        }
+    </script>
+</body>
+</html>

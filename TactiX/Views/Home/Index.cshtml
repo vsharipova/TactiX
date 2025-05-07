@@ -1,0 +1,196 @@
+﻿@{
+    ViewData["Title"] = "TactiX — Анализ стрельбы";
+    Layout = "_Layout";
+}
+
+@model TactiX.Models.ViewModels.HomeViewModel
+
+<div class="home-container">
+    <div class="header-tabs">
+        <div class="left-tabs">
+            <a asp-controller="Calendar" asp-action="Index" class="tab-btn profile-btn">
+                <i class="fas fa-calendar-days"></i> Календарь тренировок и матчей
+            </a>
+            <a asp-controller="MatchAnalysis" asp-action="MatchAnalysisList" class="tab-btn profile-btn">
+                <i class="fas fa-chart-bar"></i> Анализ матчей
+            </a>
+            <a asp-controller="TrainingAnalysis" asp-action="TrainingAnalysisList" class="tab-btn profile-btn">
+                <i class="fas fa-dumbbell"></i> Анализ тренировок
+            </a>
+            <a asp-controller="Support" asp-action="Index" class="tab-btn profile-btn">
+                <i class="fas fa-solid fa-comment"></i> Служба поддержки
+            </a>
+        </div>
+        <div class="right-tabs">
+            <a asp-controller="Profile" asp-action="Index" class="tab-btn profile-btn">
+                <i class="fas fa-user"></i> Профиль
+            </a>
+        </div>
+    </div>
+
+    <div class="welcome-header">
+        <h1>Добро пожаловать в <span class="tacti">Tacti</span><span class="x-red">X</span></h1>
+        <p>Система анализа результатов практической стрельбы</p>
+    </div>
+
+    <div class="content-wrapper">
+        <div class="stats-left">
+            <h3><i class="fas fa-bullseye"></i> Статистика попаданий за месяц</h3>
+            <div class="chart-container">
+                <canvas id="pieChart"></canvas>
+            </div>
+        </div>
+
+        <div class="stats-right">
+            <h3><i class="fas fa-chart-column"></i> Сравнение с прошлым месяцем</h3>
+            <div class="chart-container">
+                <canvas id="barChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-section">
+        <div class="next-match">
+            @if (Model.NextMatch != null)
+            {
+                <h3>
+                    <i class="fas fa-trophy"></i> След. матч:
+                    <span>@Model.NextMatch.MatchName - @Model.NextMatch.MatchDate.ToString("dd.MM.yyyy")</span>
+                </h3>
+            }
+            else
+            {
+                <h3><i class="fas fa-trophy"></i> Ближайших матчей не запланировано</h3>
+            }
+        </div>
+        <div class="advice-section">
+            <h3><i class="fas fa-lightbulb"></i> Советы по подготовке:</h3>
+            <ul>
+                @* @foreach (var advice in Model.TrainingAdvices)
+                {
+                    <li>@advice</li>
+                } *@
+            </ul>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/home.css">
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const monthlyPieCtx = document.getElementById('pieChart').getContext('2d');
+            const monthlyPieChart = new Chart(monthlyPieCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['Альфа', 'Чарли', 'Дельта', 'Промахи'],
+                    datasets: [{
+                        data: [
+        @Model.MonthlyStats.AlphaPercentage.ToString(System.Globalization.CultureInfo.InvariantCulture),
+        @Model.MonthlyStats.CharliePercentage.ToString(System.Globalization.CultureInfo.InvariantCulture),
+        @Model.MonthlyStats.DeltaPercentage.ToString(System.Globalization.CultureInfo.InvariantCulture),
+        @Model.MonthlyStats.MissPercentage.ToString(System.Globalization.CultureInfo.InvariantCulture)
+                        ],
+                        backgroundColor: [
+                            'rgba(26, 115, 232, 0.8)',  
+                            'rgba(66, 133, 244, 0.8)',   
+                            'rgba(92, 141, 245, 0.8)',   
+                            'rgba(29, 53, 87, 0.8)'      
+                        ],
+                        borderColor: [
+                            'rgba(26, 115, 232, 1)',
+                            'rgba(66, 133, 244, 1)',
+                            'rgba(92, 141, 245, 1)',
+                            'rgba(29, 53, 87, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return `${context.label}: ${context.raw.toFixed(2)}%`;
+                                }
+                            }
+                        }
+                    },
+                    animation: {
+                        animateScale: true,
+                        animateRotate: true
+                    }
+                }
+            });
+
+            const barCtx = document.getElementById('barChart');
+            if (barCtx) {
+                new Chart(barCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Альфа', 'Чарли', 'Дельта', 'Промахи'],
+                        datasets: [
+                            {
+                                label: 'Текущий месяц',
+                                data: [
+        @Model.MonthlyStats.AlphaPercentage.ToString(System.Globalization.CultureInfo.InvariantCulture),
+        @Model.MonthlyStats.CharliePercentage.ToString(System.Globalization.CultureInfo.InvariantCulture),
+        @Model.MonthlyStats.DeltaPercentage.ToString(System.Globalization.CultureInfo.InvariantCulture),
+        @Model.MonthlyStats.MissPercentage.ToString(System.Globalization.CultureInfo.InvariantCulture)
+                                ],
+                                backgroundColor: 'rgba(230, 57, 70, 0.8)'
+                            },
+                            {
+                                label: 'Прошлый месяц',
+                                data: [
+        @Model.PrevMonthStats.AlphaPercentage.ToString(System.Globalization.CultureInfo.InvariantCulture),
+        @Model.PrevMonthStats.CharliePercentage.ToString(System.Globalization.CultureInfo.InvariantCulture),
+        @Model.PrevMonthStats.DeltaPercentage.ToString(System.Globalization.CultureInfo.InvariantCulture),
+        @Model.PrevMonthStats.MissPercentage.ToString(System.Globalization.CultureInfo.InvariantCulture)
+                                ],
+                                backgroundColor: 'rgba(29, 53, 87, 0.8)'
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function (value) {
+                                        return value + '%';
+                                    }
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        },
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function (context) {
+                                        return `${context.dataset.label}: ${context.raw.toFixed(1)}%`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+}

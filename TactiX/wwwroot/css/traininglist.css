@@ -1,0 +1,130 @@
+﻿:root {
+    --primary: #e63946;
+    --secondary: #457b9d;
+    --dark: #1d3557;
+    --light: #f1faee;
+    --accent: #a8dadc;
+    --accuracy-color: #4caf50;
+    --speed-color: #2196f3;
+    --combination-color: #9c27b0;
+    --power-color: #f44336;
+}
+
+.trainings-list-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.training-type {
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+    .training-type.точность {
+        background-color: var(--accuracy-color);
+        color: white;
+    }
+
+    .training-type.скорость {
+        background-color: var(--speed-color);
+        color: white;
+    }
+
+    .training-type.комбинация {
+        background-color: var(--combination-color);
+        color: white;
+    }
+
+    .training-type.силовая {
+        background-color: var(--power-color);
+        color: white;
+    }
+
+.trainings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 15px;
+}
+
+.training-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    border: 1px solid #eee;
+    text-decoration: none;
+    color: #333;
+    transition: all 0.3s;
+}
+
+    .training-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-color: var(--accent);
+    }
+
+.training-card-header {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+    .training-card-header h5 {
+        margin: 0;
+        color: var(--dark);
+        font-size: 1.1rem;
+    }
+
+.training-date {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.training-card-footer {
+    color: var(--secondary);
+}
+
+.btn-back {
+    background: var(--secondary);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s;
+}
+
+    .btn-back:hover {
+        background: var(--dark);
+        color: white;
+    }
+
+.btn-export {
+    background-color: #1a5276;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    margin-left: 10px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+    .btn-export:hover {
+        background-color: #154360;
+        color: white;
+    }
+
+    .btn-export i {
+        margin-right: 5px;
+    }

@@ -1,0 +1,142 @@
+﻿@model TactiX.Models.ViewModels.CalendarViewModel
+@{
+    ViewData["Title"] = "Календарь";
+    Layout = "_Layout";
+}
+
+<div class="calendar-container">
+    <a href="@Url.Action("Index", "Home")" class="btn btn-back">
+        <i class="fas fa-home"></i> На главную
+    </a>
+    <div class="calendar-header">
+        <h1><span class="tacti">Tacti</span><span class="x-red">X</span> — Календарь</h1>
+        <div class="calendar-actions">
+            <button class="btn-add-match" data-bs-toggle="modal" data-bs-target="#addMatchModal">
+                <i class="fas fa-trophy"></i> Добавить матч
+            </button>
+            <button class="btn-add-training" data-bs-toggle="modal" data-bs-target="#addTrainingModal">
+                <i class="fas fa-dumbbell"></i> Добавить тренировку
+            </button>
+            <a href="@Url.Action("ExportCalendarReport")" class="btn btn-export">
+                <i class="fas fa-file-word"></i> Выгрузить отчет
+            </a>
+        </div>
+    </div>
+
+    <div id="calendar"></div>
+</div>
+
+<div class="modal fade" id="addMatchModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Добавить матч</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="AddMatch" method="post">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Дата и время</label>
+                        <input type="datetime-local" class="form-control" name="date" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Название</label>
+                        <input type="text" class="form-control" name="title" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Добавить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addTrainingModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Добавить тренировку</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="AddTraining" method="post" id="trainingForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Дата и время*</label>
+                        <input type="datetime-local" class="form-control" name="date" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Тип тренировки*</label>
+                        <select class="form-control" name="type" required>
+                            <option value="">-- Выберите тип --</option>
+                            <option value="Точность">Точность</option>
+                            <option value="Скорость">Скорость</option>
+                            <option value="Комбинация">Комбинация</option>
+                        </select>
+                        <span class="text-danger field-validation-valid" data-valmsg-for="type" data-valmsg-replace="true"></span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Добавить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/calendar.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css">
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales/ru.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: 'ru',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                events: [
+        @foreach (var e in Model.Events)
+        {
+            @:{
+            @:id: '@e.Id',
+            @:title: '@e.Title',
+            @:start: '@e.Date.ToString("yyyy-MM-ddTHH:mm:ss")',
+            @:color: '@e.Color',
+            @:extendedProps: { type: '@e.Type' }
+            @:},
+        }
+                ],
+            eventClick: function(info) {
+                if (info.event.extendedProps.type === 'match') {
+                    window.location.href = '/Calendar/MatchDetails/' + info.event.id;
+                }
+                else if (info.event.extendedProps.type === 'training') {
+                    window.location.href = '/Calendar/TrainingDetails/' + info.event.id;
+                }
+            },
+            eventContent: function(arg) {
+                let icon = arg.event.extendedProps.type === 'match'
+                    ? '<i class="fas fa-trophy"></i>'
+                    : '<i class="fas fa-dumbbell"></i>';
+
+                return {
+                    html: `${icon} <strong>${arg.event.title}</strong>`
+                };
+            }
+        });
+        calendar.render();
+        });
+    </script>
+}

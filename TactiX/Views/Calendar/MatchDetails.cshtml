@@ -1,0 +1,203 @@
+﻿@model TactiX.Models.Match
+
+@{
+    ViewData["Title"] = Model.MatchName;
+    Layout = "_Layout";
+}
+
+<div class="container mt-4">
+    <div class="mb-3">
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> Вернуться к календарю
+        </a>
+    </div>
+    <h2>@Model.MatchName</h2>
+    <p class="text-muted">@Model.MatchDate.ToString("dd.MM.yyyy HH:mm")</p>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>Основная информация</h4>
+        </div>
+        <div class="card-footer text-end">
+            <form asp-action="DeleteMatch" method="post"
+                  onsubmit="return confirm('Удалить этот матч со всеми этапами?')">
+                <input type="hidden" name="id" value="@Model.MatchId" />
+                <button type="submit" class="btn btn-danger">
+                    <i class="fas fa-trash"></i> Удалить матч
+                </button>
+            </form>
+        </div>
+        <div class="card-body">
+            <form id="updateMatchForm" asp-action="UpdateMatch" method="post">
+                <input type="hidden" asp-for="MatchId" />
+
+                <div class="mb-3">
+                    <label asp-for="MatchName" class="form-label">Название</label>
+                    <input asp-for="MatchName" class="form-control" required>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="MatchDate" class="form-label">Дата и время</label>
+                    <input asp-for="MatchDate" type="datetime-local" class="form-control" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Сохранить</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h4>Упражнения матча</h4>
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addStageModal">
+                <i class="fas fa-plus"></i> Добавить упражнение
+            </button>
+        </div>
+
+        <div class="card-body" id="stagesContainer">
+            <partial name="_StagesList" model="Model.Stages.OrderBy(s => s.MatchStageId).ToList()" />
+        </div>
+
+        <div id="alertsContainer" class="position-fixed top-0 end-0 p-3" style="z-index: 1100"></div>
+    </div>
+</div>
+
+<div class="modal fade" id="addStageModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Добавить упражнение матча</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="addStageForm" asp-action="AddMatchStage" method="post">
+                <input type="hidden" name="MatchId" value="@Model.MatchId" />
+
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Основные данные</h6>
+                            <div class="mb-3">
+                                <label class="form-label">Название упражнения*</label>
+                                <input name="StageName" class="form-control" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Тип упражнения*</label>
+                                <select name="StageType" class="form-select" required>
+                                    <option value="1">Короткое</option>
+                                    <option value="2">Среднее</option>
+                                    <option value="3">Длинное</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Hit Factor</label>
+                                <input type="hidden" name="HitFactor" id="hitFactorHidden" value="0"> 
+                                <input type="number" step="0.01" id="hitFactorResult" class="form-control" readonly>
+                                <small class="text-muted">Формула: (5×A + 3×C + 1×D) / время</small>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <h6>Время и попадания</h6>
+                            <div class="mb-3">
+                                <label class="form-label">Время (секунды + милисекунды)*</label>
+                                <input type="text" name="StageTimeInput" class="form-control" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Alpha*</label>
+                                <input type="number" name="AlphasCount" class="form-control" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Charlie*</label>
+                                <input type="number" name="CharliesCount" class="form-control" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Delta*</label>
+                                <input type="number" name="DeltasCount" class="form-control" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Miss*</label>
+                                <input type="number" name="MissesCount" class="form-control" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <h6>Количество мишеней</h6>
+                            <div class="mb-3">
+                                <label class="form-label">Ipsc мишень*</label>
+                                <input type="number" name="NumOfSpots" class="form-control" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Поппер*</label>
+                                <input type="number" name="NumOfPoppers" class="form-control" required>
+                            </div>
+
+
+                            <div class="mb-3">
+                                <label class="form-label">Тарелка*</label>
+                                <input type="number" name="NumOfPlates" class="form-control" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Сохранить упражнение</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            function calculateHitFactor() {
+                const alphas = Math.max(0, parseInt($('#alphasCount').val()) || 0);
+                const charlies = Math.max(0, parseInt($('#charliesCount').val()) || 0);
+                const deltas = Math.max(0, parseInt($('#deltasCount').val()) || 0);
+                const time = Math.max(0.1, parseFloat($('#stageTime').val()) || 0.1);
+
+                const hitFactor = (5 * alphas + 3 * charlies + 1 * deltas) / time;
+                const roundedHitFactor = hitFactor.toFixed(4);
+
+                $('#hitFactorResult').val(roundedHitFactor);
+                $('#hitFactorHidden').val(roundedHitFactor);
+
+                return hitFactor;
+            }
+
+            calculateHitFactor();
+
+            $('#alphasCount, #charliesCount, #deltasCount, #stageTime').on('input', function () {
+                calculateHitFactor();
+            });
+
+            $('#addStageForm').submit(function (e) {
+                calculateHitFactor();
+
+                if (!$('#hitFactorHidden').val()) {
+                    e.preventDefault();
+                    alert('Пожалуйста, заполните все обязательные поля');
+                    return false;
+                }
+
+                return true;
+            });
+
+            $('#editForm').submit(function () {
+                calculateHitFactor();
+                return true;
+            });
+        });
+    </script>
+}

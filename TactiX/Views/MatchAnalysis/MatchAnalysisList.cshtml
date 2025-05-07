@@ -1,0 +1,42 @@
+﻿@model IEnumerable<TactiX.Models.Match>
+
+<div class="matches-list-container">
+    <div class="navigation-buttons">
+        <a href="@Url.Action("Index", "Home")" class="btn btn-back">
+            <i class="fas fa-home"></i> На главную
+        </a>
+        <a href="@Url.Action("ExportAllMatchesAnalysis")" class="btn btn-export">
+            <i class="fas fa-file-word"></i> Выгрузить отчет об анализе всех матчей
+        </a>
+    </div>
+
+    <div class="matches-list-header">
+        <h2><i class="fas fa-chart-bar"></i> Выберите матч для анализа</h2>
+    </div>
+
+    <div class="matches-list-card">
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger">@TempData["Error"]</div>
+        }
+
+        <div class="matches-grid">
+            @foreach (var match in Model)
+            {
+                <a asp-action="Analyze" asp-route-matchId="@match.MatchId" class="match-card">
+                    <div class="match-card-header">
+                        <h5>@match.MatchName</h5>
+                        <span class="match-date">@match.MatchDate.ToString("dd.MM.yyyy")</span>
+                    </div>
+                    <div class="match-card-footer">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </a>
+            }
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/matchlist.css">
+}
