@@ -19,20 +19,17 @@ namespace TactiX.DBContext
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Настройка User
             modelBuilder.Entity<User>(entity =>
             {
                 entity.HasKey(u => u.UserId);
                 entity.HasIndex(u => new { u.Name, u.Surname }).IsUnique();
             });
 
-            // Настройка Training
             modelBuilder.Entity<Training>()
                  .HasMany(t => t.Stages)
                  .WithOne(s => s.Training)
                  .HasForeignKey(s => s.TrainingId);
 
-            // Настройка TrainingStage
             modelBuilder.Entity<TrainingStage>(entity =>
             {
                 entity.HasKey(ts => ts.TrainingStageId);
@@ -53,14 +50,12 @@ namespace TactiX.DBContext
                      .OnDelete(DeleteBehavior.Cascade);
             });
 
-            // Настройка MatchStage
             modelBuilder.Entity<MatchStage>(entity =>
             {
                 entity.HasKey(ms => ms.MatchStageId);
                 entity.HasIndex(ms => new { ms.StageName, ms.HitFactor });
             });
 
-            // Настройка Analysis
             modelBuilder.Entity<Analysis>(entity =>
             {
                 entity.HasKey(a => a.AnalysisId);
@@ -77,24 +72,20 @@ namespace TactiX.DBContext
                      .OnDelete(DeleteBehavior.Cascade);
             });
 
-            // Настройка TrainingAnalysis
             modelBuilder.Entity<TrainingAnalysis>(entity =>
             {
                 entity.HasKey(ta => ta.TrainingAnalysisId);
 
-                // Связь один-к-одному с тренировкой (аналогично MatchAnalysis)
                 entity.HasOne(ta => ta.Training)
-                     .WithOne(t => t.Analysis) // Предполагается, что в Training есть свойство Analysis
+                     .WithOne(t => t.Analysis) 
                      .HasForeignKey<TrainingAnalysis>(ta => ta.TrainingId)
                      .OnDelete(DeleteBehavior.Cascade);
 
-                // Индексы
                 entity.HasIndex(ta => ta.IsBestPerformance);
                 entity.HasIndex(ta => ta.PerformanceScore);
                 entity.HasIndex(ta => ta.CalculatedAt);
-                entity.HasIndex(ta => ta.TrainingType); // Дополнительный индекс для типа тренировки
+                entity.HasIndex(ta => ta.TrainingType); 
 
-                // Настройка точности для decimal полей
                 entity.Property(ta => ta.AlphaPercentage).HasColumnType("decimal(5,2)");
                 entity.Property(ta => ta.DeltaPercentage).HasColumnType("decimal(5,2)");
                 entity.Property(ta => ta.CharliePercentage).HasColumnType("decimal(5,2)");
@@ -102,10 +93,9 @@ namespace TactiX.DBContext
                 entity.Property(ta => ta.AvgHitFactor).HasColumnType("decimal(5,2)");
                 entity.Property(ta => ta.PerformanceScore).HasColumnType("decimal(3,1)");
 
-                // Конфигурация для типа тренировки (если используется enum)
                 entity.Property(ta => ta.TrainingType)
-                      .HasConversion<string>() // Конвертирует enum в строку для БД
-                      .HasMaxLength(50); // Ограничение длины
+                      .HasConversion<string>() 
+                      .HasMaxLength(50); 
             });
 
             modelBuilder.Entity<MatchAnalysis>(entity =>
@@ -129,12 +119,10 @@ namespace TactiX.DBContext
                 entity.Property(ma => ma.PerformanceScore).HasColumnType("decimal(3,1)");
             });
 
-            // Настройка Comparison
             modelBuilder.Entity<Comparison>(entity =>
             {
                 entity.HasKey(c => c.ComparisonId);
 
-                // Явно указываем связи без обратных навигаций
                 entity.HasOne(c => c.BaseMatchAnalysis)
                     .WithMany()
                     .HasForeignKey(c => c.BaseMatchId)
@@ -146,7 +134,6 @@ namespace TactiX.DBContext
                     .OnDelete(DeleteBehavior.Restrict);
             });
 
-            // Установка схемы "public" (по умолчанию в PostgreSQL)
             modelBuilder.HasDefaultSchema("public");
         }
     }
