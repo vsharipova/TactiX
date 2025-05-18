@@ -11,30 +11,26 @@ namespace TactiX
 {
     public class Program
     {
-        public static async void Main(string[] args)
+        public static async Task Main(string[] args) // Добавлен async
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__TactiXDB")
-                ?? builder.Configuration.GetConnectionString("TactiXDB");
+            // Получаем строку подключения
+            var connectionString = builder.Configuration.GetConnectionString("TactiXDB");
 
+            // Регистрация DbContext (один раз!)
             builder.Services.AddDbContext<TactiXDB>(options =>
                 options.UseNpgsql(connectionString, o => o.EnableRetryOnFailure()));
 
-            // Add services to the container.
-            builder.Services.AddControllersWithViews();
-
+            // Остальные сервисы
             builder.Services.AddControllersWithViews()
-            .AddJsonOptions(options =>
-                 options.JsonSerializerOptions.PropertyNamingPolicy = null);
+                .AddJsonOptions(options =>
+                    options.JsonSerializerOptions.PropertyNamingPolicy = null);
 
             builder.Services.AddHttpClient();
             builder.Services.AddTransient<IEmailService, ElasticEmailService>();
             builder.Services.AddScoped<MatchAnalysisService>();
             builder.Services.AddScoped<TrainingAnalysisService>();
-
-            builder.Services.AddDbContext<TactiXDB>(options =>
-                 options.UseNpgsql(builder.Configuration.GetConnectionString("TactiXDB")));
 
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
@@ -45,25 +41,23 @@ namespace TactiX
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
-            if (!app.Environment.IsDevelopment())
-            {
-                app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-            }
-
+            // Применяем миграции
             using (var scope = app.Services.CreateScope())
             {
                 var db = scope.ServiceProvider.GetRequiredService<TactiXDB>();
-                await db.Database.MigrateAsync();
+                await db.Database.MigrateAsync(); // Теперь с await
+            }
+
+            // Остальная конфигурация
+            if (!app.Environment.IsDevelopment())
+            {
+                app.UseExceptionHandler("/Home/Error");
+                app.UseHsts();
             }
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
             app.UseRouting();
-
             app.UseAuthentication();
             app.UseAuthorization();
 
@@ -81,7 +75,7 @@ namespace TactiX
                 }
             });
 
-            app.Run();
+            await app.RunAsync(); // Изменено на RunAsync
         }
     }
 }
