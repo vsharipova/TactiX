@@ -5,10 +5,12 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
-COPY ["TactiX/TactiX.csproj", "TactiX/"] 
-COPY ["TactiX.sln", "."] 
+
+COPY ["TactiX/TactiX.csproj", "TactiX/"]
 RUN dotnet restore "TactiX/TactiX.csproj"
-COPY .. .
+
+COPY . .
+
 WORKDIR "/src/TactiX"
 RUN dotnet build "TactiX.csproj" -c Release -o /app/build
 
@@ -18,4 +20,4 @@ RUN dotnet publish "TactiX.csproj" -c Release -o /app/publish /p:UseAppHost=fals
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "TactiX.dll"] 
+ENTRYPOINT ["dotnet", "TactiX.dll"]
