@@ -5,7 +5,8 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
-COPY ["../TactiX.csproj", "TactiX/"]  # Обновленный путь
+COPY ["TactiX/TactiX.csproj", "TactiX/"] 
+COPY ["TactiX.sln", "."] 
 RUN dotnet restore "TactiX/TactiX.csproj"
 COPY .. .
 WORKDIR "/src/TactiX"
@@ -17,4 +18,4 @@ RUN dotnet publish "TactiX.csproj" -c Release -o /app/publish /p:UseAppHost=fals
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "TactiX.dll"]  # Убедитесь, что имя совпадает с вашим проектом
+ENTRYPOINT ["dotnet", "TactiX.dll"] 
