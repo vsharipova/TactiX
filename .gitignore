@@ -361,3 +361,28 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+## Файлы окружения ##
+.env
+.env.local
+.env.development
+.env.production
+*.env
+
+## Docker ##
+**/docker-compose.override.yml
+docker-compose.*.yml
+
+## .NET ##
+bin/
+obj/
+*.user
+*.suo
+*.cache
+*.nupkg
+appsettings.Development.json
+
+## Базы данных ##
+**/migrations/
+pgdata/
+postgres_data/
