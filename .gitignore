@@ -386,3 +386,4 @@ appsettings.Development.json
 **/migrations/
 pgdata/
 postgres_data/
+/.env
