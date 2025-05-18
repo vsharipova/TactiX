@@ -1,5 +1,4 @@
-﻿@model TactiX.Models.SupportRequest
-@{
+﻿@{
     ViewData["Title"] = "Служба поддержки TactiX";
     Layout = "_Layout";
 }
@@ -14,85 +13,38 @@
         </div>
 
         <div class="card-body">
-            @if (TempData["SuccessMessage"] != null)
-            {
-                <div class="alert alert-success alert-dismissible fade show">
-                    <i class="fas fa-check-circle me-2"></i>
-                    @TempData["SuccessMessage"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            }
-
-            @if (TempData["ErrorMessage"] != null)
-            {
-                <div class="alert alert-danger alert-dismissible fade show">
-                    <i class="fas fa-exclamation-triangle me-2"></i>
-                    @TempData["ErrorMessage"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            }
-
-            <form asp-action="SendSupportRequest" asp-controller="Support" method="post" class="needs-validation" novalidate>
-                @Html.AntiForgeryToken()
-
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label asp-for="UserName" class="form-label">Ваше имя*</label>
-                            <input asp-for="UserName" class="form-control" required>
-                            <span asp-validation-for="UserName" class="text-danger"></span>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="UserEmail" class="form-label">Email для ответа*</label>
-                            <input asp-for="UserEmail" type="email" class="form-control" required>
-                            <span asp-validation-for="UserEmail" class="text-danger"></span>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="MessageType" class="form-label">Тип обращения*</label>
-                            <select asp-for="MessageType" class="form-select" required>
-                                <option value="" disabled selected>Выберите тип</option>
-                                <option value="Техническая проблема">Техническая проблема</option>
-                                <option value="Вопрос по функционалу">Вопрос по функционалу</option>
-                                <option value="Предложение">Предложение по улучшению</option>
-                                <option value="Другое">Другое</option>
-                            </select>
-                            <span asp-validation-for="MessageType" class="text-danger"></span>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="support-info">
+                        <h4><i class="fas fa-envelope me-2"></i>Электронная почта</h4>
+                        <p>По всем вопросам вы можете обратиться на нашу почту поддержки:</p>
+                        <div class="contact-email">
+                            <a href="mailto:tactix.help@rambler.ru" class="btn btn-primary">
+                                <i class="fas fa-paper-plane me-2"></i> tactix.help@rambler.ru
+                            </a>
                         </div>
                     </div>
+                </div>
 
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label asp-for="MessageText" class="form-label">Сообщение*</label>
-                            <textarea asp-for="MessageText" class="form-control" rows="8" required></textarea>
-                            <span asp-validation-for="MessageText" class="text-danger"></span>
-                        </div>
-
-                        <div class="mb-3 form-check">
-                            <input asp-for="AgreeTerms" class="form-check-input" required>
-                            <label asp-for="AgreeTerms" class="form-check-label">
-                                Я согласен на обработку персональных данных*
-                            </label>
-                            <span asp-validation-for="AgreeTerms" class="text-danger"></span>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary w-100 py-2">
-                            <i class="fas fa-paper-plane me-2"></i> Отправить сообщение
-                        </button>
+                <div class="col-md-6">
+                    <div class="support-tips">
+                        <h4><i class="fas fa-lightbulb me-2"></i>Рекомендации</h4>
+                        <ul>
+                            <li>Укажите в теме письма суть вашего обращения</li>
+                            <li>Опишите проблему максимально подробно</li>
+                            <li>Приложите скриншоты, если это необходимо</li>
+                            <li>В среднем мы отвечаем в течение 24 часов</li>
+                        </ul>
                     </div>
                 </div>
-            </form>
+            </div>
         </div>
 
         <div class="card-footer bg-light">
-            <div class="d-flex justify-content-between align-items-center">
+            <div class="text-center">
                 <small class="text-muted">
-                    <i class="fas fa-clock me-1"></i> Время ответа: до 24 часов
+                    <i class="fas fa-clock me-1"></i> Время работы поддержки: Пн-Пт, 9:00-18:00
                 </small>
-                <a href="mailto:tactix.help@rambler.ru" class="btn btn-sm btn-outline-primary">
-                    <i class="fas fa-envelope me-1"></i> tactix.help@rambler.ru
-                </a>
             </div>
         </div>
     </div>
@@ -100,34 +52,4 @@
 
 @section Styles {
     <link rel="stylesheet" href="~/css/support.css">
-}
-
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-
-    <script>
-        $(document).ready(function () {
-            setTimeout(function () {
-                $('.alert').fadeTo(500, 0).slideUp(500, function () {
-                    $(this).remove();
-                });
-            }, 5000);
-
-            (function () {
-                'use strict'
-                const forms = document.querySelectorAll('.needs-validation')
-
-                Array.from(forms).forEach(function (form) {
-                    form.addEventListener('submit', function (event) {
-                        if (!form.checkValidity()) {
-                            event.preventDefault()
-                            event.stopPropagation()
-                        }
-
-                        form.classList.add('was-validated')
-                    }, false)
-                })
-            })()
-        });
-    </script>
 }

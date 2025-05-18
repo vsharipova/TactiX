@@ -22,7 +22,7 @@ namespace TactiX.Models
 
         [Column("stage_type")]
         [Required]
-        public long StageType { get; set; }
+        public string StageType { get; set; }
 
         [Column("hit_factor")]
         [Required]
@@ -30,31 +30,31 @@ namespace TactiX.Models
 
         [Column("num_of_spots")]
         [Required]
-        public long NumOfSpots { get; set; }
+        public int NumOfSpots { get; set; }
 
         [Column("num_of_poppers")]
         [Required]
-        public long NumOfPoppers { get; set; }
+        public int NumOfPoppers { get; set; }
 
         [Column("num_of_plates")]
         [Required]
-        public long NumOfPlates { get; set; }
+        public int NumOfPlates { get; set; }
 
         [Column("alphas_count")]
         [Required]
-        public long AlphasCount { get; set; }
+        public int AlphasCount { get; set; }
 
         [Column("deltas_count")]
         [Required]
-        public long DeltasCount { get; set; }
+        public int DeltasCount { get; set; }
 
         [Column("charlies_count")]
         [Required]
-        public long CharliesCount { get; set; }
+        public int CharliesCount { get; set; }
 
         [Column("misses_count")]
         [Required]
-        public long MissesCount { get; set; }
+        public int MissesCount { get; set; }
 
         [Column("stage_time")]
         [Required]

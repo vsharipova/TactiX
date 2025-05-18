@@ -13,31 +13,31 @@ namespace TactiX.Models
         public string StageName { get; set; }
 
         [Required]
-        public long StageType { get; set; }
+        public string StageType { get; set; }
         
         [DisplayFormat(DataFormatString = "{0:0.0000}")]
         public double HitFactor { get; set; }
 
         [Required]
-        public long NumOfSpots { get; set; }
+        public int NumOfSpots { get; set; }
 
         [Required]
-        public long NumOfPoppers { get; set; }
+        public int NumOfPoppers { get; set; }
 
         [Required]
-        public long NumOfPlates { get; set; }
+        public int NumOfPlates { get; set; }
 
         [Required]
-        public long AlphasCount { get; set; }
+        public int AlphasCount { get; set; }
 
         [Required]
-        public long DeltasCount { get; set; }
+        public int DeltasCount { get; set; }
 
         [Required]
-        public long CharliesCount { get; set; }
+        public int CharliesCount { get; set; }
 
         [Required]
-        public long MissesCount { get; set; }
+        public int MissesCount { get; set; }
 
         public string StageTimeInput { get; set; }
 

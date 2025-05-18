@@ -27,10 +27,6 @@ namespace TactiX.Models
 
         [ForeignKey("UserId")]
         public User User { get; set; }
-
-        [Column("match_analysis_id")]
-        [ForeignKey("Analysis")]
-        public int? MatchAnalysisId { get; set; }
         public MatchAnalysis Analysis { get; set; }
 
         public ICollection<MatchStage> Stages { get; set; } = new List<MatchStage>();

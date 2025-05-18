@@ -24,13 +24,8 @@ namespace TactiX.Models
         [Column("user_id")]
         public int UserId { get; set; } 
 
-
         [ForeignKey("UserId")]
         public User User { get; set; }
-
-        [Column("training_analysis_id")]
-        [ForeignKey("Analysis")]
-        public int? TrainingAnalysisId { get; set; }
         public TrainingAnalysis Analysis { get; set; }
 
         public ICollection<TrainingStage> Stages { get; set; } = new List<TrainingStage>();

@@ -1,0 +1,123 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="TactiX.Models.MatchCreateDto">
+    <Position X="0.5" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAEAAAAAAAAAAAAAAAAABAAAAAAAAAAA=</HashCode>
+      <FileName>Models\MatchCreateDto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TactiX.Models.MatchStageCreateDto">
+    <Position X="2.25" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAgEAAABAAAAgCAAAAAAAAAAQABKAgEAAAIAAAAABA=</HashCode>
+      <FileName>Models\MatchStageCreateDto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TactiX.Models.ViewModels.CalendarViewModel">
+    <Position X="5.75" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABAAAAAAAAAAAAAAAAAAAAAAEgAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\ViewModels\CalendarViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TactiX.Models.ViewModels.CalendarEvent">
+    <Position X="4" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAEAAAAAAAAAAAAAAAAABAQAAgAAAAAA=</HashCode>
+      <FileName>Models\ViewModels\CalendarViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TactiX.Models.ViewModels.ForgotPasswordViewModel">
+    <Position X="7.5" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAABAAAAAAAAAAAAAAAAAAAAAAIAA=</HashCode>
+      <FileName>Models\ViewModels\ForgotPasswordViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TactiX.Models.ViewModels.HomeViewModel">
+    <Position X="5.75" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAgAAAAAAAAAAAAACAAAAAAAACAAAAAAABAA=</HashCode>
+      <FileName>Models\ViewModels\HomeViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TactiX.Models.ViewModels.MonthlyStats">
+    <Position X="7.5" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAQAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAA=</HashCode>
+      <FileName>Models\ViewModels\HomeViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TactiX.Models.ViewModels.LoginViewModel">
+    <Position X="9.25" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAAAAAAAAAAAAAAAACAAAAAAAgAAA=</HashCode>
+      <FileName>Models\ViewModels\LoginViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TactiX.Models.ViewModels.MatchAnalysisDto">
+    <Position X="9.25" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gBUgAEAAAAEAgAIAAAAAAAAAAAAAAAAABAEQAARAAAA=</HashCode>
+      <FileName>Models\ViewModels\MatchAnalysisDto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TactiX.Models.ViewModels.ComparisonDto">
+    <Position X="4" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAACAAAAAAAAAEAAAAgAGABgAAAAAASg=</HashCode>
+      <FileName>Models\ViewModels\MatchAnalysisDto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TactiX.Models.ViewModels.MatchStageEditDto">
+    <Position X="0.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAgEAAABAAAAgCAAAAAAAAAAQABKAwEAAAIAAAAABA=</HashCode>
+      <FileName>Models\ViewModels\MatchStageEditDto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TactiX.Models.ViewModels.RegisterViewModel">
+    <Position X="7.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAABAAAAAAAAQABAAAAAACAAAAAAAAIAA=</HashCode>
+      <FileName>Models\ViewModels\RegisterViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TactiX.Models.ViewModels.TrainingCreateDto">
+    <Position X="5.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAACAAAA=</HashCode>
+      <FileName>Models\ViewModels\TrainingCreateDto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TactiX.Models.ViewModels.TrainingStageCreateDto">
+    <Position X="2.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAEAAABAAAAgCAAAAAAAAAAQABKAgEAAAIAAAAABA=</HashCode>
+      <FileName>Models\ViewModels\TrainingStageCreateDto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TactiX.Models.ViewModels.TrainingStageEditDto">
+    <Position X="11" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAEAAABAAAAgCAAAAgAAAAAQABKAgEAAAIAAAAABA=</HashCode>
+      <FileName>Models\ViewModels\TrainingStageEditDto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TactiX.Models.ViewModels.TrainingAnalysisDto">
+    <Position X="12.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gBUAAEAMAAEAggAAAAAAAAAAAAAAAAAAAAEQAARAAAA=</HashCode>
+      <FileName>Models\ViewModels\TrainingAnalysisDto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TactiX.Models.ViewModels.TrainingComparisonDto">
+    <Position X="11" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAQAAAAAAACAAAAAAAAAEAACAgQEAAgAAEAAACA=</HashCode>
+      <FileName>Models\ViewModels\TrainingAnalysisDto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

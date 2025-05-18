@@ -77,6 +77,12 @@ namespace TactiX.Controllers
         {
             if (ModelState.IsValid)
             {
+                if (model.Password != model.ConfirmPassword)
+                {
+                    ModelState.AddModelError(string.Empty, "Пароли не совпадают");
+                    return View(model);
+                }
+
                 var userExists = await _context.Users.AnyAsync(u => u.Email == model.Email);
                 if (userExists)
                 {
