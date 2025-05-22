@@ -193,10 +193,6 @@ namespace TactiX.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("MatchId"));
 
-                    b.Property<int?>("MatchAnalysisId")
-                        .HasColumnType("integer")
-                        .HasColumnName("match_analysis_id");
-
                     b.Property<DateTime>("MatchDate")
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("match_date");
@@ -306,16 +302,16 @@ namespace TactiX.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("MatchStageId"));
 
-                    b.Property<long>("AlphasCount")
-                        .HasColumnType("bigint")
+                    b.Property<int>("AlphasCount")
+                        .HasColumnType("integer")
                         .HasColumnName("alphas_count");
 
-                    b.Property<long>("CharliesCount")
-                        .HasColumnType("bigint")
+                    b.Property<int>("CharliesCount")
+                        .HasColumnType("integer")
                         .HasColumnName("charlies_count");
 
-                    b.Property<long>("DeltasCount")
-                        .HasColumnType("bigint")
+                    b.Property<int>("DeltasCount")
+                        .HasColumnType("integer")
                         .HasColumnName("deltas_count");
 
                     b.Property<double>("HitFactor")
@@ -326,20 +322,20 @@ namespace TactiX.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("match_id");
 
-                    b.Property<long>("MissesCount")
-                        .HasColumnType("bigint")
+                    b.Property<int>("MissesCount")
+                        .HasColumnType("integer")
                         .HasColumnName("misses_count");
 
-                    b.Property<long>("NumOfPlates")
-                        .HasColumnType("bigint")
+                    b.Property<int>("NumOfPlates")
+                        .HasColumnType("integer")
                         .HasColumnName("num_of_plates");
 
-                    b.Property<long>("NumOfPoppers")
-                        .HasColumnType("bigint")
+                    b.Property<int>("NumOfPoppers")
+                        .HasColumnType("integer")
                         .HasColumnName("num_of_poppers");
 
-                    b.Property<long>("NumOfSpots")
-                        .HasColumnType("bigint")
+                    b.Property<int>("NumOfSpots")
+                        .HasColumnType("integer")
                         .HasColumnName("num_of_spots");
 
                     b.Property<string>("StageName")
@@ -352,8 +348,9 @@ namespace TactiX.Migrations
                         .HasColumnType("interval")
                         .HasColumnName("stage_time");
 
-                    b.Property<long>("StageType")
-                        .HasColumnType("bigint")
+                    b.Property<string>("StageType")
+                        .IsRequired()
+                        .HasColumnType("text")
                         .HasColumnName("stage_type");
 
                     b.HasKey("MatchStageId");
@@ -373,10 +370,6 @@ namespace TactiX.Migrations
                         .HasColumnName("training_id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("TrainingId"));
-
-                    b.Property<int?>("TrainingAnalysisId")
-                        .HasColumnType("integer")
-                        .HasColumnName("training_analysis_id");
 
                     b.Property<DateTime>("TrainingDate")
                         .HasColumnType("timestamp without time zone")
@@ -495,36 +488,36 @@ namespace TactiX.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("TrainingStageId"));
 
-                    b.Property<long>("AlphasCount")
-                        .HasColumnType("bigint")
+                    b.Property<int>("AlphasCount")
+                        .HasColumnType("integer")
                         .HasColumnName("alphas_count");
 
-                    b.Property<long>("CharliesCount")
-                        .HasColumnType("bigint")
+                    b.Property<int>("CharliesCount")
+                        .HasColumnType("integer")
                         .HasColumnName("charlies_count");
 
-                    b.Property<long>("DeltasCount")
-                        .HasColumnType("bigint")
+                    b.Property<int>("DeltasCount")
+                        .HasColumnType("integer")
                         .HasColumnName("deltas_count");
 
                     b.Property<double>("HitFactor")
                         .HasColumnType("double precision")
                         .HasColumnName("hit_factor");
 
-                    b.Property<long>("MissesCount")
-                        .HasColumnType("bigint")
+                    b.Property<int>("MissesCount")
+                        .HasColumnType("integer")
                         .HasColumnName("misses_count");
 
-                    b.Property<long>("NumOfPlates")
-                        .HasColumnType("bigint")
+                    b.Property<int>("NumOfPlates")
+                        .HasColumnType("integer")
                         .HasColumnName("num_of_plates");
 
-                    b.Property<long>("NumOfPoppers")
-                        .HasColumnType("bigint")
+                    b.Property<int>("NumOfPoppers")
+                        .HasColumnType("integer")
                         .HasColumnName("num_of_poppers");
 
-                    b.Property<long>("NumOfSpots")
-                        .HasColumnType("bigint")
+                    b.Property<int>("NumOfSpots")
+                        .HasColumnType("integer")
                         .HasColumnName("num_of_spots");
 
                     b.Property<string>("StageName")
