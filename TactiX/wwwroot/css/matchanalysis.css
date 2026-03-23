@@ -68,7 +68,7 @@
     }
 
 .best-badge {
-    background: var(--primary);
+    background: #2ecc71;
     color: white;
     padding: 5px 10px;
     border-radius: 20px;

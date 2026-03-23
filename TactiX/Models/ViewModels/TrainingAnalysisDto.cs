@@ -5,7 +5,7 @@
         public int TrainingId { get; set; }
         public string TrainingName { get; set; }
         public DateTime TrainingDate { get; set; }
-        public string TrainingType { get; set; } // "Точность", "Скорость" и т.д.
+        public string TrainingType { get; set; } 
 
         public int TotalShots { get; set; }
         public decimal AlphaPercentage { get; set; }

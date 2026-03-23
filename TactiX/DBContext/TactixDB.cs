@@ -16,6 +16,7 @@ namespace TactiX.DBContext
         public DbSet<TrainingAnalysis> TrainingAnalyses { get; set; }
         public DbSet<MatchAnalysis> MatchAnalyses { get; set; }
         public DbSet<Comparison> Comparisons { get; set; }
+        public DbSet<Exercise> Exercises { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -34,6 +35,7 @@ namespace TactiX.DBContext
             {
                 entity.HasKey(ts => ts.TrainingStageId);
                 entity.HasIndex(ts => new { ts.StageName, ts.HitFactor });
+                entity.Property(ts => ts.BriefingData).HasColumnType("jsonb");
             });
 
 
@@ -54,6 +56,7 @@ namespace TactiX.DBContext
             {
                 entity.HasKey(ms => ms.MatchStageId);
                 entity.HasIndex(ms => new { ms.StageName, ms.HitFactor });
+                entity.Property(ms => ms.BriefingData).HasColumnType("jsonb");
             });
 
             modelBuilder.Entity<Analysis>(entity =>
@@ -132,6 +135,17 @@ namespace TactiX.DBContext
                     .WithMany()
                     .HasForeignKey(c => c.ComparedMatchId)
                     .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<Exercise>(entity =>
+            {
+                entity.HasKey(e => e.ExerciseId);
+                entity.HasIndex(e => e.Name);
+                entity.HasIndex(e => e.Category);
+                entity.HasIndex(e => e.Difficulty);
+                entity.Property(e => e.TagsJson).HasColumnType("jsonb");
+                entity.Property(e => e.Category).HasConversion<string>();
+                entity.Property(e => e.Difficulty).HasConversion<string>();
             });
 
             modelBuilder.HasDefaultSchema("public");

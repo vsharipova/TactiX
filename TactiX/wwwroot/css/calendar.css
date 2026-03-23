@@ -97,9 +97,19 @@ margin-top: 20px;
 }
 
 .fc-event {
-cursor: pointer;
-padding: 3px 5px;
-margin-bottom: 3px;
+    cursor: pointer;
+    padding: 3px 5px;
+    margin-bottom: 3px;
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
 }
 
 .fc-event i {

@@ -215,7 +215,7 @@ font-size: 0.9rem;
     line-height: 1.5;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     animation: fadeIn 0.3s ease-in-out;
-    z-index: 1000; /* Чтобы было поверх других элементов */
+    z-index: 1000; 
 }
 
 .alert-success {

@@ -61,6 +61,9 @@ namespace TactiX.Models
         [Required]
         public TimeSpan StageTime { get; set; }
 
+        [Column("briefing_data", TypeName = "jsonb")]
+        public string? BriefingData { get; set; }
+
         public Training Training { get; set; }
     }
 }

@@ -44,27 +44,27 @@
 
                         <div class="mb-3">
                             <label asp-for="StageTimeInput" class="form-label">Время (секунды + милисекунды)*</label>
-                            <input asp-for="StageTimeInput" class="form-control" required>
+                            <input asp-for="StageTimeInput" class="form-control" required min="0.1" step="0.01" id="stageTime">
                         </div>
 
                         <div class="mb-3">
                             <label asp-for="AlphasCount" class="form-label">Alpha*</label>
-                            <input asp-for="AlphasCount" type="number" class="form-control" required>
+                            <input asp-for="AlphasCount" type="number" class="form-control" required min="0" step="1" id="alphasCount">
                         </div>
 
                         <div class="mb-3">
                             <label asp-for="CharliesCount" class="form-label">Charlie*</label>
-                            <input asp-for="CharliesCount" type="number" class="form-control" required>
+                            <input asp-for="CharliesCount" type="number" class="form-control" required min="0" step="1" id="charliesCount">
                         </div>
 
                         <div class="mb-3">
                             <label asp-for="DeltasCount" class="form-label">Delta*</label>
-                            <input asp-for="DeltasCount" type="number" class="form-control" required>
+                            <input asp-for="DeltasCount" type="number" class="form-control" required min="0" step="1" id="deltasCount">
                         </div>
 
                         <div class="mb-3">
                             <label asp-for="MissesCount" class="form-label">Miss*</label>
-                            <input asp-for="MissesCount" type="number" class="form-control" required>
+                            <input asp-for="MissesCount" type="number" class="form-control" required min="0" step="1" id="missesCount">
                         </div>
                     </div>
                 </div>
@@ -75,17 +75,17 @@
 
                         <div class="mb-3">
                             <label asp-for="NumOfSpots" class="form-label">Ipsc мишень*</label>
-                            <input asp-for="NumOfSpots" type="number" class="form-control" required>
+                            <input asp-for="NumOfSpots" type="number" class="form-control" required min="0" step="1">
                         </div>
 
                         <div class="mb-3">
                             <label asp-for="NumOfPoppers" class="form-label">Поппер*</label>
-                            <input asp-for="NumOfPoppers" type="number" class="form-control" required>
+                            <input asp-for="NumOfPoppers" type="number" class="form-control" required min="0" step="1">
                         </div>
 
                         <div class="mb-3">
                             <label asp-for="NumOfPlates" class="form-label">Тарелка*</label>
-                            <input asp-for="NumOfPlates" type="number" class="form-control" required>
+                            <input asp-for="NumOfPlates" type="number" class="form-control" required min="0" step="1">
                         </div>
                     </div>
                 </div>

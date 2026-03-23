@@ -9,10 +9,8 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/TactiX.styles.css" asp-append-version="true" />
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&family=Orbitron:wght@500&display=swap" rel="stylesheet">
 </head>
 
@@ -47,7 +45,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2025 - TactiX - <a asp-area="" asp-controller="Home" asp-action="Privacy">Политика конфиденциальности</a>
+            &copy; 2026 - TactiX - <a asp-area="" asp-controller="Home" asp-action="Privacy">Политика конфиденциальности</a>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
@@ -62,7 +60,6 @@
         </button>
     </div>
 
-    <!-- Модальное окно для деталей -->
     <div class="modal fade" id="detailsModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -71,10 +68,10 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <!-- Контент будет загружен динамически -->
                 </div>
             </div>
         </div>
     </div>
+    @await Html.PartialAsync("_BriefingEditorModal")
 </body>
 </html>

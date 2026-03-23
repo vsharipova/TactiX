@@ -11,18 +11,20 @@ namespace TactiX
 {
     public class Program
     {
-        public static async Task Main(string[] args) // Добавлен async
+        public static async Task Main(string[] args) 
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Получаем строку подключения
             var connectionString = builder.Configuration.GetConnectionString("TactiXDB");
+            if (string.IsNullOrEmpty(connectionString))
+            {
+                throw new InvalidOperationException("Connection string 'TactiXDB' is not configured.");
+            }
+            Console.WriteLine($"Connection string: {connectionString}");
 
-            // Регистрация DbContext (один раз!)
             builder.Services.AddDbContext<TactiXDB>(options =>
                 options.UseNpgsql(connectionString, o => o.EnableRetryOnFailure()));
 
-            // Остальные сервисы
             builder.Services.AddControllersWithViews()
                 .AddJsonOptions(options =>
                     options.JsonSerializerOptions.PropertyNamingPolicy = null);
@@ -31,6 +33,7 @@ namespace TactiX
             builder.Services.AddTransient<IEmailService, ElasticEmailService>();
             builder.Services.AddScoped<MatchAnalysisService>();
             builder.Services.AddScoped<TrainingAnalysisService>();
+            builder.Services.AddScoped<RecommendationService>();
 
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
@@ -41,14 +44,12 @@ namespace TactiX
 
             var app = builder.Build();
 
-            // Применяем миграции
-            using (var scope = app.Services.CreateScope())
-            {
-                var db = scope.ServiceProvider.GetRequiredService<TactiXDB>();
-                await db.Database.MigrateAsync(); // Теперь с await
-            }
+            // using (var scope = app.Services.CreateScope())
+            // {
+            //     var db = scope.ServiceProvider.GetRequiredService<TactiXDB>();
+            //     await db.Database.MigrateAsync();
+            // }
 
-            // Остальная конфигурация
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
@@ -61,21 +62,14 @@ namespace TactiX
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.UseStatusCodePagesWithReExecute("/Home/Error", "?statusCode={0}");
+
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Account}/{action=Login}/{id?}");
 
-            app.Use(async (context, next) =>
-            {
-                await next();
-                if (context.Response.StatusCode == 404)
-                {
-                    context.Request.Path = "/Home/Error";
-                    await next();
-                }
-            });
-
-            await app.RunAsync(); // Изменено на RunAsync
+            await app.RunAsync();
+            //app.Run();
         }
     }
 }

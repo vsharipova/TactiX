@@ -20,24 +20,31 @@ namespace TactiX.Models.ViewModels
         public double HitFactor { get; set; }
 
         [Required]
+        [Range(0, int.MaxValue, ErrorMessage = "Значение не может быть отрицательным")]
         public int NumOfSpots { get; set; }
 
         [Required]
+        [Range(0, int.MaxValue, ErrorMessage = "Значение не может быть отрицательным")]
         public int NumOfPoppers { get; set; }
 
         [Required]
+        [Range(0, int.MaxValue, ErrorMessage = "Значение не может быть отрицательным")]
         public int NumOfPlates { get; set; }
 
         [Required]
+        [Range(0, int.MaxValue, ErrorMessage = "Значение не может быть отрицательным")]
         public int AlphasCount { get; set; }
 
         [Required]
+        [Range(0, int.MaxValue, ErrorMessage = "Значение не может быть отрицательным")]
         public int DeltasCount { get; set; }
 
         [Required]
+        [Range(0, int.MaxValue, ErrorMessage = "Значение не может быть отрицательным")]
         public int CharliesCount { get; set; }
 
         [Required]
+        [Range(0, int.MaxValue, ErrorMessage = "Значение не может быть отрицательным")]
         public int MissesCount { get; set; }
 
         public TimeSpan StageTime { get; set; }

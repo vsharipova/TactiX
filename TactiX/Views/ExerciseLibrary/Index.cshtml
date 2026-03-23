@@ -1,0 +1,69 @@
+@model TactiX.Controllers.ExerciseLibraryViewModel
+@{
+    ViewData["Title"] = "Библиотека упражнений";
+    Layout = "_Layout";
+}
+
+<div class="container mt-4">
+    <a href="@Url.Action("Index", "Home")" class="btn btn-back">
+        <i class="fas fa-home"></i> На главную
+    </a>
+    <h1 class="mb-4"><i class="fas fa-book-open"></i> Библиотека упражнений</h1>
+    <p class="lead">Выберите категорию для просмотра упражнений.</p>
+
+    <div class="row">
+        @foreach (var category in Model.Categories)
+        {
+            var categoryName = category switch
+            {
+                TactiX.Models.ExerciseCategory.Accuracy => "Точность",
+                TactiX.Models.ExerciseCategory.Transfers => "Переносы",
+                TactiX.Models.ExerciseCategory.DrawSpeed => "Скорость вскидки",
+                TactiX.Models.ExerciseCategory.MovementSpeed => "Скорость перемещений",
+                TactiX.Models.ExerciseCategory.ShootingOnMove => "Стрельба в движении",
+                TactiX.Models.ExerciseCategory.Combination => "Комбинация",
+                _ => category.ToString()
+            };
+            var icon = category switch
+            {
+                TactiX.Models.ExerciseCategory.Accuracy => "fa-bullseye",
+                TactiX.Models.ExerciseCategory.Transfers => "fa-arrows-left-right",
+                TactiX.Models.ExerciseCategory.DrawSpeed => "fa-bolt",
+                TactiX.Models.ExerciseCategory.MovementSpeed => "fa-person-running",
+                TactiX.Models.ExerciseCategory.ShootingOnMove => "fa-walking",
+                TactiX.Models.ExerciseCategory.Combination => "fa-layer-group",
+                _ => "fa-dumbbell"
+            };
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 text-center">
+                    <div class="card-header bg-primary text-white">
+                        <h4><i class="fas @icon"></i> @categoryName</h4>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Упражнений в категории: @Model.ExercisesByCategory[category].Count</p>
+                        <a asp-action="Category" asp-route-category="@category" class="btn btn-outline-primary">Перейти</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .card-header {
+            border-radius: 10px 10px 0 0 !important;
+        }
+        .card-header.bg-primary {
+            background-color: #1d3557 !important;
+        }
+    </style>
+}

@@ -19,26 +19,26 @@ namespace TactiX.Models.ViewModels
         [DisplayFormat(DataFormatString = "{0:0.0000}")]
         public double HitFactor { get; set; }
 
-        [Required]
-        public int NumOfSpots { get; set; }
+        [Range(0, int.MaxValue)]
+        public int NumOfSpots { get; set; } = 0;
 
-        [Required]
-        public int NumOfPoppers { get; set; }
+        [Range(0, int.MaxValue)]
+        public int NumOfPoppers { get; set; } = 0;
 
-        [Required]
-        public int NumOfPlates { get; set; }
+        [Range(0, int.MaxValue)]
+        public int NumOfPlates { get; set; } = 0;
 
-        [Required]
-        public int AlphasCount { get; set; }
+        [Range(0, int.MaxValue)]
+        public int AlphasCount { get; set; } = 0;
 
-        [Required]
-        public int DeltasCount { get; set; }
+        [Range(0, int.MaxValue)]
+        public int DeltasCount { get; set; } = 0;
 
-        [Required]
-        public int CharliesCount { get; set; }
+        [Range(0, int.MaxValue)]
+        public int CharliesCount { get; set; } = 0;
 
-        [Required]
-        public int MissesCount { get; set; }
+        [Range(0, int.MaxValue)]
+        public int MissesCount { get; set; } = 0;
 
         public string StageTimeInput { get; set; }
 

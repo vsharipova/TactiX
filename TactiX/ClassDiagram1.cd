@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="TactiX.Models.Analysis">
+    <Position X="12.25" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAECAABAAAAAACACAAAAACAAAAAABAhAQABAAAQAAEA=</HashCode>
+      <FileName>Models\Analysis.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TactiX.Models.BriefingData">
+    <Position X="7" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAABAAAAAAQAAgAAAAAAAAAAAAAAAAAIAA=</HashCode>
+      <FileName>Models\BriefingData.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TactiX.Models.BriefingElement">
+    <Position X="8.75" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAABAAAAIAAAAAAAEAAAAAAAAAAAQAAAAACYAA=</HashCode>
+      <FileName>Models\BriefingData.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TactiX.Models.Comparison">
+    <Position X="14" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAACgAAAAAAAAEAAAAgAEQBgAAQAAACg=</HashCode>
+      <FileName>Models\Comparison.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TactiX.Models.Exercise">
+    <Position X="14" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAQAAAAAAiAQAAAAAAAAQAEAAAAEAAAAAAAAAgCAA=</HashCode>
+      <FileName>Models\Exercise.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TactiX.Models.Match">
+    <Position X="15.75" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAhAAAAAAAACAIAAAAAAAgAAAAAAAAABAgABAAAABA=</HashCode>
+      <FileName>Models\Match.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TactiX.Models.MatchAnalysis">
+    <Position X="7" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>kBUiAkAAAAAAgAgAAAAAAAAAAAAAAAhAQAFQAAQAAAA=</HashCode>
+      <FileName>Models\MatchAnalysis.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TactiX.Models.MatchStage">
+    <Position X="10.5" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAgEgACBAAAAgCAAAAAAAAAAQABKAwEAAAAAAAAABA=</HashCode>
+      <FileName>Models\MatchStage.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TactiX.Models.Training">
+    <Position X="10.5" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEBAAAAAAAAAgAAAAAAAAgAAAAAAAAAAAgABACAAAA=</HashCode>
+      <FileName>Models\Training.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TactiX.Models.TrainingAnalysis">
+    <Position X="5.25" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>kBUCAEAIAAAAgCgAAAAAAAAAEAAAAAgAQAFQAAQAAAA=</HashCode>
+      <FileName>Models\TrainingAnalysis.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TactiX.Models.TrainingStage">
+    <Position X="8.75" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAEAACBAAAAgCAAAAgAAAAEQABKAgEAAAAAAAAABA=</HashCode>
+      <FileName>Models\TrainingStage.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TactiX.Models.User">
+    <Position X="12.25" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABAAAAAAACEEABAAAAAAAAwAFAAAAAAAAEAAAAAAAAA=</HashCode>
+      <FileName>Models\User.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Enum Name="TactiX.Models.ExerciseCategory">
+    <Position X="15.75" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAgAAAAAIAAAAAAAIAQAAAAgAAAABAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Exercise.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="TactiX.Models.DifficultyLevel">
+    <Position X="15.75" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAQ=</HashCode>
+      <FileName>Models\Exercise.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

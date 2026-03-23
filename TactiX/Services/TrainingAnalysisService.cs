@@ -204,7 +204,6 @@ namespace TactiX.Services
             if (analysis.AlphaPercentage < 40)
                 advice.Add("Низкий процент попаданий в Альфа-зону - тренируйте прицеливание");
 
-            // Дополнительные советы по типу тренировки
             if (analysis.TrainingType == "Скорость" && analysis.AvgHitFactor < 5)
                 advice.Add("Низкий Hit Factor - работайте над скоростью без потери точности");
 

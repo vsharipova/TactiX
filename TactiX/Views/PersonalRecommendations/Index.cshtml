@@ -1,0 +1,243 @@
+@model TactiX.Services.PersonalRecommendation
+@{
+    ViewData["Title"] = "Персональные рекомендации";
+    Layout = "_Layout";
+}
+
+<div class="container mt-4">
+    <a href="@Url.Action("Index", "Home")" class="btn btn-back">
+        <i class="fas fa-home"></i> На главную
+    </a>
+    <h1 class="mb-4"><i class="fas fa-lightbulb"></i> Персональные рекомендации</h1>
+
+    @if (!Model.HasData)
+    {
+        <div class="alert alert-info">
+            <h4>@Model.Message</h4>
+            <p>Начните добавлять матчи, чтобы получать рекомендации.</p>
+        </div>
+        return;
+    }
+
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h4><i class="fas fa-chart-line"></i> Анализ последнего матча</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Матч: @Model.LastMatch.MatchName</h5>
+                    <p>Дата: @Model.LastMatch.MatchDate.ToString("dd.MM.yyyy")</p>
+                    <p>Количество упражнений: @Model.LastMatch.Stages.Count</p>
+                </div>
+                <div class="col-md-6">
+                    <h5>Изменения показателей</h5>
+                    <ul class="list-unstyled">
+                        <li>
+                            <strong>Точность:</strong>
+                            @if (Model.AccuracyChange < 0)
+                            {
+                                <span class="text-danger">↓ @Math.Abs(Model.AccuracyChange).ToString("F2")%</span>
+                            }
+                            else if (Model.AccuracyChange > 0)
+                            {
+                                <span class="text-success">↑ @Model.AccuracyChange.ToString("F2")%</span>
+                            }
+                            else
+                            {
+                                <span>без изменений</span>
+                            }
+                        </li>
+                        <li>
+                            <strong>Скорость:</strong>
+                            @if (Model.SpeedChange > 0)
+                            {
+                                <span class="text-danger">↑ @Model.SpeedChange.ToString("F2")% (медленнее)</span>
+                            }
+                            else if (Model.SpeedChange < 0)
+                            {
+                                <span class="text-success">↓ @Math.Abs(Model.SpeedChange).ToString("F2")% (быстрее)</span>
+                            }
+                            else
+                            {
+                                <span>без изменений</span>
+                            }
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header bg-info text-white">
+            <h4><i class="fas fa-robot"></i> Показатели машинного обучения</h4>
+        </div>
+        <div class="card-body">
+            @if (Model.AccuracyIssue.HasValue)
+            {
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5>Точность</h5>
+                        <ul class="list-unstyled">
+                            @if (Model.AccuracyIssue.Value)
+                            {
+                                <li><strong>Проблема обнаружена:</strong> Да</li>
+                            }
+                            <li><strong>Отклонение:</strong> @Model.AccuracyResidual?.ToString("F2")</li>
+                            <li><strong>Тренд:</strong> @Model.AccuracySlope?.ToString("F4")</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h5>Скорость</h5>
+                        <ul class="list-unstyled">
+                            @if (Model.SpeedIssue.Value)
+                            {
+                                <li><strong>Проблема обнаружена:</strong> Да</li>
+                            }
+                            <li><strong>Отклонение:</strong> @Model.SpeedResidual?.ToString("F2")</li>
+                            <li><strong>Тренд:</strong> @Model.SpeedSlope?.ToString("F4")</li>
+                        </ul>
+                    </div>
+                </div>
+                <p class="text-muted small mt-3">
+                    <i class="fas fa-info-circle"></i> Отклонение показывает отклонение от предсказанного значения (отрицательный — точность ниже ожидаемой, положительный — скорость выше ожидаемой). Тренд указывает на общую тенденцию (отрицательный — ухудшение точности, положительный — замедление).
+                </p>
+            }
+            else
+            {
+                <p class="text-muted">Машинное обучение не применялось (недостаточно данных для анализа трендов).</p>
+            }
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header bg-success text-white">
+            <h4><i class="fas fa-comment-dots"></i> Рекомендация</h4>
+        </div>
+        <div class="card-body">
+            <p class="lead">@Model.RecommendationMessage</p>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-warning text-white">
+            <h4><i class="fas fa-dumbbell"></i> Рекомендуемые упражнения</h4>
+        </div>
+        <div class="card-body">
+            @if (Model.SuggestedExercises.Any())
+            {
+                <div class="row">
+                    @foreach (var exercise in Model.SuggestedExercises)
+                    {
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card h-100">
+                                @if (!string.IsNullOrEmpty(exercise.ImageUrl))
+                                {
+                                    <a href="#" class="exercise-image-link" data-image-url="@exercise.ImageUrl" data-exercise-name="@exercise.Name">
+                                        <img src="@exercise.ImageUrl" class="card-img-top" alt="@exercise.Name" style="height: 200px; object-fit: contain; background-color: #f8f9fa;">
+                                    </a>
+                                }
+                                else
+                                {
+                                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                        <i class="fas fa-dumbbell fa-3x text-muted"></i>
+                                    </div>
+                                }
+                                <div class="card-body">
+                                    <h5 class="card-title">@exercise.Name</h5>
+                                    <h6 class="card-subtitle mb-2 text-muted">
+                                        <span class="badge bg-primary">@exercise.Category</span>
+                                        <span class="badge bg-secondary">@exercise.Difficulty</span>
+                                    </h6>
+                                    <p class="card-text">@exercise.Description</p>
+                                    <div class="mt-3">
+                                        @if (exercise.Duration.HasValue)
+                                        {
+                                            <p><i class="fas fa-clock"></i> Длительность: @exercise.Duration.Value.ToString(@"mm\:ss")</p>
+                                        }
+                                        @if (exercise.Tags.Any())
+                                        {
+                                            <div>
+                                                <strong>Теги:</strong>
+                                                @foreach (var tag in exercise.Tags)
+                                                {
+                                                    <span class="badge bg-light text-dark border">@tag</span>
+                                                }
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <p>Нет доступных упражнений для рекомендаций.</p>
+            }
+        </div>
+    </div>
+
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="imageModalLabel">Просмотр изображения</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img id="modalImage" src="" class="img-fluid" alt="">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .card-header {
+            border-radius: 10px 10px 0 0 !important;
+        }
+        .container .card-header.bg-primary {
+            background-color: #1d3557 !important;
+        }
+        .container .card-header.bg-success {
+            background-color: #305790 !important;
+        }
+        .container .card-header.bg-warning {
+            background-color: #4a7cc2 !important;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var imageLinks = document.querySelectorAll('.exercise-image-link');
+            var modalImage = document.getElementById('modalImage');
+            var modalTitle = document.getElementById('imageModalLabel');
+            var imageModal = new bootstrap.Modal(document.getElementById('imageModal'));
+
+            imageLinks.forEach(function (link) {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    var imageUrl = this.getAttribute('data-image-url');
+                    var exerciseName = this.getAttribute('data-exercise-name');
+                    modalImage.src = imageUrl;
+                    modalImage.alt = exerciseName;
+                    modalTitle.textContent = exerciseName;
+                    imageModal.show();
+                });
+            });
+        });
+    </script>
+}

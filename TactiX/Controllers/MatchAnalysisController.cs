@@ -116,7 +116,6 @@ namespace TactiX.Controllers
             {
                 using (var wordDocument = WordprocessingDocument.Create(memoryStream, WordprocessingDocumentType.Document))
                 {
-                    // Добавляем основную часть документа
                     var mainPart = wordDocument.AddMainDocumentPart();
                     mainPart.Document = new Document();
                     var body = mainPart.Document.AppendChild(new Body());

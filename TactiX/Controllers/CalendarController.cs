@@ -12,6 +12,7 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using TactiX.Models;
+using System.Text.Json;
 
 namespace TactiX.Controllers
 {
@@ -136,8 +137,8 @@ namespace TactiX.Controllers
                 return BadRequest(ModelState);
             }
 
-            model.HitFactor = (5 * model.AlphasCount + 3 * model.CharliesCount + 1 * model.DeltasCount)
-                / Math.Max(model.StageTime.TotalSeconds, 0.1f);
+            model.HitFactor = (5 * model.AlphasCount + 3 * model.CharliesCount + 1 * model.DeltasCount - model.MissesCount * 5)
+                 / Math.Max(model.StageTime.TotalSeconds, 0.1f);
 
             var stage = new MatchStage
             {
@@ -222,7 +223,7 @@ namespace TactiX.Controllers
             var stage = await _context.MatchStages.FindAsync(model.MatchStageId);
             if (stage == null) return NotFound();
 
-            model.HitFactor = (5 * model.AlphasCount + 3 * model.CharliesCount + 1 * model.DeltasCount)
+            model.HitFactor = (5 * model.AlphasCount + 3 * model.CharliesCount + 1 * model.DeltasCount - model.MissesCount * 5)
                 / Math.Max(model.StageTime.TotalSeconds, 0.1f);
 
             stage.StageName = model.StageName;
@@ -306,7 +307,7 @@ namespace TactiX.Controllers
         [HttpPost]
         public async Task<IActionResult> AddTrainingStage([FromForm] TrainingStageCreateDto model)
         {
-            model.HitFactor = (5 * model.AlphasCount + 3 * model.CharliesCount + 1 * model.DeltasCount)
+            model.HitFactor = (5 * model.AlphasCount + 3 * model.CharliesCount + 1 * model.DeltasCount - model.MissesCount * 5)
                 / Math.Max(model.StageTime.TotalSeconds, 0.1f);
 
             model.HitFactor = (float)Math.Round(model.HitFactor, 4);
@@ -366,8 +367,8 @@ namespace TactiX.Controllers
                 return View(model);
             }
 
-            model.HitFactor = (5 * model.AlphasCount + 3 * model.CharliesCount + 1 * model.DeltasCount)
-                 / Math.Max(model.StageTime.TotalSeconds, 0.1f);
+            model.HitFactor = (5 * model.AlphasCount + 3 * model.CharliesCount + 1 * model.DeltasCount - model.MissesCount * 5)
+                / Math.Max(model.StageTime.TotalSeconds, 0.1f);
             model.HitFactor = (float)Math.Round(model.HitFactor, 4);
 
             var stage = await _context.TrainingStages.FindAsync(model.TrainingStageId);
@@ -593,5 +594,103 @@ namespace TactiX.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> SaveBriefing([FromBody] BriefingSaveDto model)
+        {
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            if (model.StageType == "match")
+            {
+                var stage = await _context.MatchStages
+                    .Include(s => s.Match)
+                    .FirstOrDefaultAsync(s => s.MatchStageId == model.StageId && s.Match.UserId == userId);
+                if (stage == null) return NotFound();
+
+                stage.BriefingData = model.BriefingData.RootElement.GetRawText();
+            }
+            else if (model.StageType == "training")
+            {
+                var stage = await _context.TrainingStages
+                    .Include(s => s.Training)
+                    .FirstOrDefaultAsync(s => s.TrainingStageId == model.StageId && s.Training.UserId == userId);
+                if (stage == null) return NotFound();
+
+                stage.BriefingData = model.BriefingData.RootElement.GetRawText();
+            }
+            else
+            {
+                return BadRequest("Invalid stage type");
+            }
+
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetBriefing(int stageId, string stageType)
+        {
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            string briefingJson = null;
+            if (stageType == "match")
+            {
+                var stage = await _context.MatchStages
+                    .Include(s => s.Match)
+                    .FirstOrDefaultAsync(s => s.MatchStageId == stageId && s.Match.UserId == userId);
+                if (stage == null) return NotFound();
+
+                briefingJson = stage.BriefingData;
+            }
+            else if (stageType == "training")
+            {
+                var stage = await _context.TrainingStages
+                    .Include(s => s.Training)
+                    .FirstOrDefaultAsync(s => s.TrainingStageId == stageId && s.Training.UserId == userId);
+                if (stage == null) return NotFound();
+
+                briefingJson = stage.BriefingData;
+            }
+            else
+            {
+                return BadRequest("Invalid stage type");
+            }
+
+            if (string.IsNullOrEmpty(briefingJson))
+                return NotFound("Брифинг не найден");
+
+            return Content(briefingJson, "application/json");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteBriefing([FromBody] BriefingSaveDto model)
+        {
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            if (model.StageType == "match")
+            {
+                var stage = await _context.MatchStages
+                    .Include(s => s.Match)
+                    .FirstOrDefaultAsync(s => s.MatchStageId == model.StageId && s.Match.UserId == userId);
+                if (stage == null) return NotFound();
+
+                stage.BriefingData = null;
+            }
+            else if (model.StageType == "training")
+            {
+                var stage = await _context.TrainingStages
+                    .Include(s => s.Training)
+                    .FirstOrDefaultAsync(s => s.TrainingStageId == model.StageId && s.Training.UserId == userId);
+                if (stage == null) return NotFound();
+
+                stage.BriefingData = null;
+            }
+            else
+            {
+                return BadRequest("Invalid stage type");
+            }
+
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
     }
 }

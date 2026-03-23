@@ -1,0 +1,1106 @@
+<div class="modal fade" id="briefingEditorModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <style>
+                .canvas-container {
+                    width: 100%;
+                    height: 100%;
+                    overflow: visible !important;
+                }
+                #briefingCanvas {
+                    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+                    border-radius: 4px;
+                    background-color: #f8f9fa;
+                }
+            </style>
+            <div class="modal-header">
+                <h5 class="modal-title">Редактор брифинга упражнения</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6 class="card-title mb-0">Параметры поля</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="form-label">Длина поля (м)</label>
+                                    <input type="range" class="form-range" id="fieldLength" min="3" max="100" value="25">
+                                    <div class="d-flex justify-content-between">
+                                        <span>3 м</span>
+                                        <span id="fieldLengthValue">25 м</span>
+                                        <span>100 м</span>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Ширина поля (м)</label>
+                                    <input type="range" class="form-range" id="fieldWidth" min="3" max="50" value="15">
+                                    <div class="d-flex justify-content-between">
+                                        <span>3 м</span>
+                                        <span id="fieldWidthValue">15 м</span>
+                                        <span>50 м</span>
+                                    </div>
+                                </div>
+                                <button class="btn btn-outline-primary w-100 mb-2" id="applyFieldSize">
+                                    <i class="fas fa-sync-alt"></i> Применить размеры
+                                </button>
+                                <hr>
+                                <h6 class="card-title">Элементы</h6>
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-outline-success" data-element="paper">
+                                        <i class="fas fa-bullseye"></i> Бумажная мишень
+                                    </button>
+                                    <button class="btn btn-outline-warning" data-element="plate">
+                                        <i class="fas fa-circle"></i> Тарелка
+                                    </button>
+                                    <button class="btn btn-outline-danger" data-element="popper">
+                                        <i class="fas fa-bullseye"></i> Поппер
+                                    </button>
+                                    <button class="btn btn-outline-secondary" data-element="decoration">
+                                        <i class="fas fa-tree"></i> Декорация
+                                    </button>
+                                    <button class="btn btn-outline-danger" data-element="penalty">
+                                        <i class="fas fa-gavel"></i> Штрафная линия
+                                    </button>
+                                </div>
+                                <hr>
+                                <h6 class="card-title">Управление</h6>
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-outline-info" id="clearCanvas">
+                                        <i class="fas fa-trash-alt"></i> Очистить поле
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="card h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h6 class="card-title mb-0">Поле упражнения</h6>
+                                <div>
+                                    <span class="badge bg-primary">Масштаб: <span id="scaleValue">1.0</span>x</span>
+                                    <button class="btn btn-sm btn-outline-secondary ms-2" id="zoomIn">
+                                        <i class="fas fa-search-plus"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-secondary" id="zoomOut">
+                                        <i class="fas fa-search-minus"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-success ms-2" id="exportPNG" title="Экспорт в PNG">
+                                        <i class="fas fa-download"></i> PNG
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="canvas-container">
+                                    <canvas id="briefingCanvas" width="800" height="600"></canvas>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <small class="text-muted">Перетаскивайте элементы, изменяйте размер колесом мыши.</small>
+                                    </div>
+                                    <div>
+                                        <button class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                                        <button class="btn btn-danger" id="deleteBriefing" style="display: none;">
+                                            <i class="fas fa-trash"></i> Удалить брифинг
+                                        </button>
+                                        <button class="btn btn-success" id="saveBriefing">
+                                            <i class="fas fa-save"></i> Сохранить брифинг
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
+<script>
+    let canvas;
+    let currentStageId = 0;
+    let currentStageType = ''; 
+    let fieldLength = 25; 
+    let fieldWidth = 15; 
+    let scale = 1.0;
+    let isViewMode = false;
+    let clipboard = null; 
+
+    const imageCache = {};
+    const imageUrls = {}; 
+    const CELL_SIZE = 20; 
+
+    function loadImages(callback) {
+        if (callback) callback();
+    }
+
+    $('#briefingEditorModal').on('shown.bs.modal', function () {
+        initCanvas();
+        setupHotkeys();
+    });
+
+    $('#briefingEditorModal').on('hidden.bs.modal', function () {
+        removeHotkeys();
+    });
+
+    function initCanvas() {
+        canvas = new fabric.Canvas('briefingCanvas', {
+            backgroundColor: '#f8f9fa',
+            selection: !isViewMode,
+            preserveObjectStacking: true
+        });
+
+        if (isViewMode) {
+            canvas.interactive = false;
+            canvas.off('mouse:wheel');
+        }
+
+        adjustCanvasSize();
+        drawFieldGrid();
+        loadExistingBriefing();
+
+        $('[data-element]').off('click').on('click', function () {
+            const type = $(this).data('element');
+            addElement(type);
+        });
+
+        $('#fieldLength').off('input').on('input', function () {
+            $('#fieldLengthValue').text($(this).val() + ' м');
+            fieldLength = parseInt($(this).val());
+        });
+        $('#fieldWidth').off('input').on('input', function () {
+            $('#fieldWidthValue').text($(this).val() + ' м');
+            fieldWidth = parseInt($(this).val());
+        });
+
+        $('#applyFieldSize').off('click').on('click', function () {
+            drawFieldGrid();
+        });
+
+        $('#zoomIn').off('click').on('click', () => { scale *= 1.2; updateScale(); });
+        $('#zoomOut').off('click').on('click', () => { scale /= 1.2; updateScale(); });
+
+        $('#exportPNG').off('click').on('click', exportToPNG);
+
+        $('#clearCanvas').off('click').on('click', function () {
+            if (confirm('Очистить поле? Все элементы будут удалены.')) {
+                canvas.clear();
+                drawFieldGrid();
+            }
+        });
+
+        $('#saveBriefing').off('click').on('click', saveBriefing);
+        $('#deleteBriefing').off('click').on('click', deleteBriefing);
+
+        setTimeout(adjustCanvasSize, 10);
+        requestAnimationFrame(() => requestAnimationFrame(adjustCanvasSize));
+
+        function enforceBoundaries(obj) {
+            if (obj.__isAdjusting) return;
+            obj.__isAdjusting = true;
+            const maxX = fieldWidth * CELL_SIZE;
+            const maxY = fieldLength * CELL_SIZE;
+            const padding = 2; 
+            const boundingRect = obj.getBoundingRect();
+            
+            const offsetX = boundingRect.left - obj.left;
+            const offsetY = boundingRect.top - obj.top;
+            
+            const minX = padding;
+            const minY = padding;
+            const maxBoundX = maxX - padding;
+            const maxBoundY = maxY - padding;
+            
+            let newBoundingLeft = boundingRect.left;
+            let newBoundingTop = boundingRect.top;
+
+            if (boundingRect.width <= maxBoundX - minX) {
+                if (newBoundingLeft < minX) newBoundingLeft = minX;
+                if (newBoundingLeft + boundingRect.width > maxBoundX) newBoundingLeft = maxBoundX - boundingRect.width;
+            } else {
+                newBoundingLeft = minX;
+            }
+            
+            if (boundingRect.height <= maxBoundY - minY) {
+                if (newBoundingTop < minY) newBoundingTop = minY;
+                if (newBoundingTop + boundingRect.height > maxBoundY) newBoundingTop = maxBoundY - boundingRect.height;
+            } else {
+                newBoundingTop = minY;
+            }
+            
+            if (newBoundingLeft !== boundingRect.left || newBoundingTop !== boundingRect.top) {
+                const newLeft = newBoundingLeft - offsetX;
+                const newTop = newBoundingTop - offsetY;
+                console.log('adjusting from', obj.left, obj.top, 'to', newLeft, newTop);
+                obj.set({ left: newLeft, top: newTop });
+                obj.setCoords();
+                canvas.requestRenderAll();
+            }
+            obj.__isAdjusting = false;
+        }
+
+        canvas.on('object:moving', function(e) {
+            enforceBoundaries(e.target);
+        });
+        canvas.on('object:scaling', function(e) {
+            enforceBoundaries(e.target);
+        });
+        canvas.on('object:rotating', function(e) {
+            enforceBoundaries(e.target);
+        });
+        canvas.on('object:added', function(e) {
+            if (e.target && !e.target.grid) {
+                enforceBoundaries(e.target);
+            }
+        });
+    }
+
+    let hotkeyListener = null;
+
+    function setupHotkeys() {
+        if (hotkeyListener) return;
+        hotkeyListener = function (e) {
+            if (!$('#briefingEditorModal').hasClass('show') || isViewMode) return;
+
+            const activeObjects = canvas.getActiveObjects();
+
+            if (e.keyCode === 46 || e.key === 'Delete') {
+                if (activeObjects.length > 0) {
+                    e.preventDefault();
+                    activeObjects.forEach(obj => canvas.remove(obj));
+                    canvas.discardActiveObject();
+                    canvas.renderAll();
+                }
+                return;
+            }
+
+            if ((e.keyCode === 67 || e.key === 'c') && (e.ctrlKey || e.metaKey)) {
+                if (activeObjects.length > 0) {
+                    e.preventDefault();
+                    clipboard = activeObjects.map(obj => obj.toObject(['data']));
+                    const clonedObjects = [];
+                    activeObjects.forEach(obj => {
+                        const clone = obj.clone();
+                        if (obj.data) {
+                            clone.data = { ...obj.data };
+                        }
+                        clone.set({
+                            left: obj.left + 10,
+                            top: obj.top + 10
+                        });
+                        canvas.add(clone);
+                        clonedObjects.push(clone);
+                    });
+                    if (clonedObjects.length === 1) {
+                        canvas.setActiveObject(clonedObjects[0]);
+                    } else if (clonedObjects.length > 1) {
+                        const selectionGroup = new fabric.ActiveSelection(clonedObjects, { canvas: canvas });
+                        canvas.setActiveObject(selectionGroup);
+                    }
+                    canvas.renderAll();
+                }
+                return;
+            }
+
+            if ((e.keyCode === 86 || e.key === 'v') && (e.ctrlKey || e.metaKey)) {
+                if (clipboard && clipboard.length > 0) {
+                    e.preventDefault();
+                    const offset = 10;
+                    fabric.util.enlivenObjects(clipboard, function(enlivenedObjects) {
+                        const pastedObjects = [];
+                        enlivenedObjects.forEach((obj, index) => {
+                            const originalData = clipboard[index].data;
+                            if (originalData) {
+                                obj.data = { ...originalData };
+                            }
+                            obj.set({
+                                left: (obj.left || 0) + offset * (index + 1),
+                                top: (obj.top || 0) + offset * (index + 1)
+                            });
+                            canvas.add(obj);
+                            pastedObjects.push(obj);
+                        });
+                        if (pastedObjects.length === 1) {
+                            canvas.setActiveObject(pastedObjects[0]);
+                        } else if (pastedObjects.length > 1) {
+                            const selectionGroup = new fabric.ActiveSelection(pastedObjects, { canvas: canvas });
+                            canvas.setActiveObject(selectionGroup);
+                        }
+                        canvas.renderAll();
+                    });
+                }
+                return;
+            }
+        };
+        document.addEventListener('keydown', hotkeyListener);
+    }
+
+    function removeHotkeys() {
+        if (hotkeyListener) {
+            document.removeEventListener('keydown', hotkeyListener);
+            hotkeyListener = null;
+        }
+    }
+
+    function drawFieldGrid() {
+        canvas.getObjects().forEach(obj => {
+            if (obj.grid) canvas.remove(obj);
+        });
+
+        const canvasWidth = canvas.getWidth();
+        const canvasHeight = canvas.getHeight();
+
+        for (let x = 0; x <= fieldWidth; x++) {
+            const line = new fabric.Line([
+                x * CELL_SIZE, 0,
+                x * CELL_SIZE, fieldLength * CELL_SIZE
+            ], {
+                stroke: '#ddd',
+                strokeWidth: 1,
+                selectable: false,
+                evented: false,
+                grid: true
+            });
+            canvas.add(line);
+        }
+        for (let y = 0; y <= fieldLength; y++) {
+            const line = new fabric.Line([
+                0, y * CELL_SIZE,
+                fieldWidth * CELL_SIZE, y * CELL_SIZE
+            ], {
+                stroke: '#ddd',
+                strokeWidth: 1,
+                selectable: false,
+                evented: false,
+                grid: true
+            });
+            canvas.add(line);
+        }
+
+        const border = new fabric.Rect({
+            left: 0,
+            top: 0,
+            width: fieldWidth * CELL_SIZE,
+            height: fieldLength * CELL_SIZE,
+            fill: 'transparent',
+            stroke: '#333',
+            strokeWidth: 2,
+            selectable: false,
+            evented: false,
+            grid: true
+        });
+        canvas.add(border);
+
+        const interval = 5; 
+        for (let meter = interval; meter <= fieldLength; meter += interval) {
+            const leftLabel = new fabric.Text(`${meter}м`, {
+                left: -5, 
+                top: meter * CELL_SIZE,
+                fontSize: 14,
+                fill: '#000',
+                fontWeight: 'bold',
+                selectable: false,
+                evented: false,
+                originX: 'right',
+                originY: 'middle',
+                grid: true
+            });
+            canvas.add(leftLabel);
+
+            const rightLabel = new fabric.Text(`${meter}м`, {
+                left: fieldWidth * CELL_SIZE + 5, 
+                top: meter * CELL_SIZE,
+                fontSize: 14,
+                fill: '#000',
+                fontWeight: 'bold',
+                selectable: false,
+                evented: false,
+                originX: 'left',
+                originY: 'middle',
+                grid: true
+            });
+            canvas.add(rightLabel);
+        }
+        if (fieldLength % interval !== 0) {
+            const leftLabel = new fabric.Text(`${fieldLength}м`, {
+                left: -5,
+                top: fieldLength * CELL_SIZE,
+                fontSize: 14,
+                fill: '#000',
+                fontWeight: 'bold',
+                selectable: false,
+                evented: false,
+                originX: 'right',
+                originY: 'middle',
+                grid: true
+            });
+            canvas.add(leftLabel);
+            const rightLabel = new fabric.Text(`${fieldLength}м`, {
+                left: fieldWidth * CELL_SIZE + 5,
+                top: fieldLength * CELL_SIZE,
+                fontSize: 14,
+                fill: '#000',
+                fontWeight: 'bold',
+                selectable: false,
+                evented: false,
+                originX: 'left',
+                originY: 'middle',
+                grid: true
+            });
+            canvas.add(rightLabel);
+        }
+
+        adjustCanvasSize();
+        canvas.getObjects().forEach(obj => {
+            if (!obj.grid) {
+                enforceBoundaries(obj);
+            }
+        });
+        canvas.renderAll();
+    }
+
+    function addElement(type) {
+        const labels = {
+            paper: 'Мишень',
+            plate: 'Тарелка',
+            popper: 'Поппер',
+            decoration: 'Декор',
+            penalty: 'Штраф'
+        };
+
+        let element;
+        if (type === 'penalty') {
+            element = new fabric.Line([0, 0, 60, 0], {
+                stroke: '#ff0000',
+                strokeWidth: 3,
+                hasControls: !isViewMode,
+                hasBorders: !isViewMode,
+                lockUniScaling: false,
+                data: { type: type },
+                evented: !isViewMode
+            });
+            element.width = 60;
+            element.height = 0;
+        } else if (type === 'paper') {
+            const width = 20, height = 40;
+            const points = [
+                { x: width * 0.3, y: 0 },
+                { x: width * 0.7, y: 0 },
+                { x: width, y: height * 0.2 },
+                { x: width, y: height * 0.8 },
+                { x: width * 0.7, y: height },
+                { x: width * 0.3, y: height },
+                { x: 0, y: height * 0.8 },
+                { x: 0, y: height * 0.2 }
+            ];
+            const outer = new fabric.Polygon(points, {
+                fill: '#A0522D', 
+                stroke: '#000',
+                strokeWidth: 1,
+                originX: 'left',
+                originY: 'top'
+            });
+            const scaleMiddle = 0.7;
+            const middlePoints = points.map(p => ({
+                x: p.x * scaleMiddle + (width - width * scaleMiddle) / 2,
+                y: p.y * scaleMiddle
+            }));
+            const middle = new fabric.Polygon(middlePoints, {
+                fill: '',
+                stroke: '#000',
+                strokeWidth: 1,
+                originX: 'left',
+                originY: 'top'
+            });
+            const scaleInner = 0.4;
+            const innerPoints = points.map(p => ({
+                x: p.x * scaleInner + (width - width * scaleInner) / 2,
+                y: p.y * scaleInner
+            }));
+            const inner = new fabric.Polygon(innerPoints, {
+                fill: '',
+                stroke: '#000',
+                strokeWidth: 1,
+                originX: 'left',
+                originY: 'top'
+            });
+            element = new fabric.Group([outer, middle, inner], {
+                left: 0,
+                top: 0,
+                hasControls: !isViewMode,
+                hasBorders: !isViewMode,
+                lockUniScaling: false,
+                data: { type: type },
+                evented: !isViewMode
+            });
+            element.width = width;
+            element.height = height;
+        } else if (type === 'plate') {
+            
+            const radius = 15;
+            element = new fabric.Circle({
+                left: 0,
+                top: 0,
+                radius: radius,
+                fill: '#1E90FF', 
+                stroke: '#0000CD',
+                strokeWidth: 1,
+                hasControls: !isViewMode,
+                hasBorders: !isViewMode,
+                lockUniScaling: false,
+                data: { type: type },
+                evented: !isViewMode
+            });
+            element.width = radius * 2;
+            element.height = radius * 2;
+        } else if (type === 'popper') {
+            const baseWidth = 10, baseHeight = 30;
+            const headRadius = baseWidth; 
+            const base = new fabric.Rect({
+                left: -baseWidth / 2,
+                top: -baseHeight / 2,
+                width: baseWidth,
+                height: baseHeight,
+                fill: '#1E90FF',
+                stroke: '#0000CD',
+                strokeWidth: 1
+            });
+            const head = new fabric.Circle({
+                left: -headRadius,
+                top: -baseHeight / 2 - headRadius,
+                radius: headRadius,
+                fill: '#1E90FF',
+                stroke: '#0000CD',
+                strokeWidth: 1
+            });
+            element = new fabric.Group([base, head], {
+                left: 0,
+                top: 0,
+                hasControls: !isViewMode,
+                hasBorders: !isViewMode,
+                lockUniScaling: false,
+                data: { type: type },
+                evented: !isViewMode
+            });
+            element.width = Math.max(baseWidth, headRadius * 2);
+            element.height = baseHeight + headRadius * 2;
+        } else if (type === 'decoration') {
+            const width = 30, height = 30;
+            element = new fabric.Rect({
+                left: 0,
+                top: 0,
+                width: width,
+                height: height,
+                fill: 'rgba(255, 0, 0, 0.3)',
+                stroke: '#8B4513',
+                strokeWidth: 2,
+                hasControls: !isViewMode,
+                hasBorders: !isViewMode,
+                lockUniScaling: false,
+                data: { type: type },
+                evented: !isViewMode
+            });
+            element.width = width;
+            element.height = height;
+        } else {
+            element = new fabric.Rect({
+                left: 0,
+                top: 0,
+                width: 10,
+                height: 10,
+                fill: '#999',
+                stroke: '#333',
+                strokeWidth: 1,
+                hasControls: !isViewMode,
+                hasBorders: !isViewMode,
+                lockUniScaling: false,
+                data: { type: type },
+                evented: !isViewMode
+            });
+        }
+
+        const centerX = fieldWidth * CELL_SIZE / 2;
+        const centerY = fieldLength * CELL_SIZE / 2;
+        element.set({
+            left: centerX,
+            top: centerY
+        });
+        canvas.add(element);
+        canvas.setActiveObject(element);
+        canvas.renderAll();
+    }
+
+    function updateScale() {
+        canvas.setZoom(scale);
+        canvas.calcOffset(); 
+        canvas.requestRenderAll();
+        $('#scaleValue').text(scale.toFixed(1));
+    }
+
+    function loadExistingBriefing() {
+        if (!currentStageId) return;
+        $.ajax({
+            url: '/Calendar/GetBriefing',
+            data: { stageId: currentStageId, stageType: currentStageType },
+            method: 'GET',
+            success: function (data) {
+                if (data) {
+                    try {
+                        const briefing = typeof data === 'string' ? JSON.parse(data) : data;
+                        canvas.getObjects().forEach(obj => {
+                            if (!obj.grid) canvas.remove(obj);
+                        });
+
+                        if (briefing.field) {
+                            fieldLength = briefing.field.length || 25;
+                            fieldWidth = briefing.field.width || 15;
+                            $('#fieldLength').val(fieldLength);
+                            $('#fieldLengthValue').text(fieldLength + ' м');
+                            $('#fieldWidth').val(fieldWidth);
+                            $('#fieldWidthValue').text(fieldWidth + ' м');
+                            drawFieldGrid();
+                            adjustCanvasSize(); 
+                        }
+                        if (briefing.view && briefing.view.zoom) {
+                            const zoom = Number(briefing.view.zoom);
+                            if (!isNaN(zoom) && zoom > 0 && zoom < 100) {
+                                canvas.setZoom(zoom);
+                                canvas.calcOffset(); 
+                                scale = zoom;
+                                $('#scaleValue').text(scale.toFixed(1));
+                            }
+                        }
+                        if (briefing.elements && Array.isArray(briefing.elements)) {
+                            briefing.elements.forEach(el => {
+                                addElementFromData(el);
+                            });
+                        }
+                        canvas.renderAll();
+                    } catch (e) {
+                    }
+                }
+            },
+            error: function () {
+            }
+        });
+    }
+
+    function addElementFromData(el) {
+        const labels = {
+            paper: 'Мишень',
+            plate: 'Тарелка',
+            popper: 'Поппер',
+            decoration: 'Декор',
+            penalty: 'Штраф',
+            unknown: '?'
+        };
+        const type = el.type || 'unknown';
+        const width = Math.max(Number(el.width) || 10, 1);
+        const height = Math.max(Number(el.height) || 10, 1);
+        const left = Number(el.left) || 0;
+        const top = Number(el.top) || 0;
+        const rotation = Number(el.rotation) || 0;
+
+        let element;
+        if (type === 'penalty') {
+            element = new fabric.Line([0, 0, width, 0], {
+                stroke: '#ff0000',
+                strokeWidth: 3,
+                hasControls: !isViewMode,
+                hasBorders: !isViewMode,
+                lockUniScaling: false,
+                data: { type: type },
+                evented: !isViewMode
+            });
+            element.width = width;
+            element.height = 0;
+        } else {
+            let defaultWidth, defaultHeight;
+            let shapeCreator = null;
+            if (type === 'paper') {
+                defaultWidth = 20;
+                defaultHeight = 40;
+                shapeCreator = () => {
+                    const points = [
+                        { x: defaultWidth * 0.3, y: 0 },
+                        { x: defaultWidth * 0.7, y: 0 },
+                        { x: defaultWidth, y: defaultHeight * 0.2 },
+                        { x: defaultWidth, y: defaultHeight * 0.8 },
+                        { x: defaultWidth * 0.7, y: defaultHeight },
+                        { x: defaultWidth * 0.3, y: defaultHeight },
+                        { x: 0, y: defaultHeight * 0.8 },
+                        { x: 0, y: defaultHeight * 0.2 }
+                    ];
+                    const outer = new fabric.Polygon(points, {
+                        fill: '#A0522D', 
+                        stroke: '#000',
+                        strokeWidth: 1,
+                        originX: 'left',
+                        originY: 'top'
+                    });
+                    const scaleMiddle = 0.7;
+                    const middlePoints = points.map(p => ({
+                        x: p.x * scaleMiddle + (defaultWidth - defaultWidth * scaleMiddle) / 2,
+                        y: p.y * scaleMiddle
+                    }));
+                    const middle = new fabric.Polygon(middlePoints, {
+                        fill: '',
+                        stroke: '#000',
+                        strokeWidth: 1,
+                        originX: 'left',
+                        originY: 'top'
+                    });
+                    const scaleInner = 0.4;
+                    const innerPoints = points.map(p => ({
+                        x: p.x * scaleInner + (defaultWidth - defaultWidth * scaleInner) / 2,
+                        y: p.y * scaleInner
+                    }));
+                    const inner = new fabric.Polygon(innerPoints, {
+                        fill: '',
+                        stroke: '#000',
+                        strokeWidth: 1,
+                        originX: 'left',
+                        originY: 'top'
+                    });
+                    return new fabric.Group([outer, middle, inner], {
+                        left: 0,
+                        top: 0,
+                        hasControls: !isViewMode,
+                        hasBorders: !isViewMode,
+                        lockUniScaling: false,
+                        data: { type: type },
+                        evented: !isViewMode
+                    });
+                };
+            } else if (type === 'plate') {
+                defaultWidth = 30;
+                defaultHeight = 30;
+                shapeCreator = () => new fabric.Circle({
+                    left: 0,
+                    top: 0,
+                    radius: 15,
+                    fill: '#1E90FF',
+                    stroke: '#0000CD',
+                    strokeWidth: 1,
+                    hasControls: !isViewMode,
+                    hasBorders: !isViewMode,
+                    lockUniScaling: false,
+                    data: { type: type },
+                    evented: !isViewMode
+                });
+            } else if (type === 'popper') {
+                defaultWidth = 20;
+                defaultHeight = 50;
+                shapeCreator = () => {
+                    const baseWidth = 10, baseHeight = 30;
+                    const headRadius = baseWidth; 
+                    const base = new fabric.Rect({
+                        left: -baseWidth / 2,
+                        top: -baseHeight / 2,
+                        width: baseWidth,
+                        height: baseHeight,
+                        fill: '#1E90FF',
+                        stroke: '#0000CD',
+                        strokeWidth: 1
+                    });
+                    const head = new fabric.Circle({
+                        left: -headRadius,
+                        top: -baseHeight / 2 - headRadius,
+                        radius: headRadius,
+                        fill: '#1E90FF',
+                        stroke: '#0000CD',
+                        strokeWidth: 1
+                    });
+                    return new fabric.Group([base, head], {
+                        left: 0,
+                        top: 0,
+                        hasControls: !isViewMode,
+                        hasBorders: !isViewMode,
+                        lockUniScaling: false,
+                        data: { type: type },
+                        evented: !isViewMode
+                    });
+                };
+            } else if (type === 'decoration') {
+                defaultWidth = 30;
+                defaultHeight = 30;
+                shapeCreator = () => new fabric.Rect({
+                    left: 0,
+                    top: 0,
+                    width: defaultWidth,
+                    height: defaultHeight,
+                    fill: 'rgba(255, 0, 0, 0.3)',
+                    stroke: '#8B4513',
+                    strokeWidth: 2,
+                    hasControls: !isViewMode,
+                    hasBorders: !isViewMode,
+                    lockUniScaling: false,
+                    data: { type: type },
+                    evented: !isViewMode
+                });
+            } else {
+                defaultWidth = width;
+                defaultHeight = height;
+                shapeCreator = () => new fabric.Rect({
+                    left: 0,
+                    top: 0,
+                    width: defaultWidth,
+                    height: defaultHeight,
+                    fill: '#999',
+                    stroke: '#333',
+                    strokeWidth: 1,
+                    hasControls: !isViewMode,
+                    hasBorders: !isViewMode,
+                    lockUniScaling: false,
+                    data: { type: type },
+                    evented: !isViewMode
+                });
+            }
+
+            element = shapeCreator();
+            element.width = defaultWidth;
+            element.height = defaultHeight;
+
+            const scaleX = width / defaultWidth;
+            const scaleY = height / defaultHeight;
+            element.set({
+                scaleX: scaleX,
+                scaleY: scaleY
+            });
+        }
+
+        element.set({
+            left: left,
+            top: top
+        });
+        if (rotation) element.set('angle', rotation);
+        canvas.add(element);
+    }
+
+    function updateBriefingButton(stageId, stageType, hasBriefing) {
+        const selector = `[data-stage-id="${stageId}"][data-stage-type="${stageType}"]`;
+        const $button = $(selector);
+        if ($button.length) {
+            if (hasBriefing) {
+                $button.replaceWith(`
+                    <button class="btn btn-sm btn-outline-info briefing-view-btn"
+                            title="Просмотреть брифинг"
+                            data-stage-id="${stageId}"
+                            data-stage-type="${stageType}"
+                            data-is-view="true">
+                        <i class="fas fa-eye"></i> Брифинг
+                    </button>
+                `);
+            } else {
+                $button.replaceWith(`
+                    <button class="btn btn-sm btn-outline-success briefing-add-btn"
+                            title="Добавить брифинг"
+                            data-stage-id="${stageId}"
+                            data-stage-type="${stageType}">
+                        <i class="fas fa-plus"></i> Брифинг
+                    </button>
+                `);
+            }
+        }
+    }
+
+    function saveBriefing() {
+        if (!currentStageId) {
+            alert('Ошибка: не указан этап');
+            return;
+        }
+
+        const objects = canvas.getObjects().filter(obj => !obj.grid);
+        const elements = objects.map(obj => ({
+            type: obj.data?.type || 'unknown',
+            left: obj.left || 0,
+            top: obj.top || 0,
+            width: (obj.width || 0) * (obj.scaleX || 1),
+            height: (obj.height || 0) * (obj.scaleY || 1),
+            rotation: obj.angle || 0
+        }));
+
+        const briefing = {
+            field: {
+                length: fieldLength,
+                width: fieldWidth
+            },
+            view: {
+                zoom: canvas.getZoom()
+            },
+            elements: elements,
+            version: '1.1'
+        };
+
+        $.ajax({
+            url: '/Calendar/SaveBriefing',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                stageId: currentStageId,
+                stageType: currentStageType,
+                briefingData: briefing
+            }),
+            success: function () {
+                alert('Брифинг успешно сохранён!');
+                updateBriefingButton(currentStageId, currentStageType, true);
+                $('#briefingEditorModal').modal('hide');
+            },
+            error: function (xhr) {
+                alert('Ошибка сохранения: ' + xhr.responseText);
+            }
+        });
+    }
+
+    function deleteBriefing() {
+        if (!currentStageId) {
+            alert('Ошибка: не указан этап');
+            return;
+        }
+        if (!confirm('Вы уверены, что хотите удалить брифинг? Это действие нельзя отменить.')) {
+            return;
+        }
+        $.ajax({
+            url: '/Calendar/DeleteBriefing',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                stageId: currentStageId,
+                stageType: currentStageType
+            }),
+            success: function () {
+                alert('Брифинг успешно удалён!');
+                updateBriefingButton(currentStageId, currentStageType, false);
+                $('#briefingEditorModal').modal('hide');
+            },
+            error: function (xhr) {
+                alert('Ошибка удаления: ' + xhr.responseText);
+            }
+        });
+    }
+
+    window.openBriefingEditor = function (stageId, stageType, viewOnly = false) {
+        currentStageId = stageId;
+        currentStageType = stageType;
+        isViewMode = viewOnly;
+        resetModalLayout();
+        prepareModalForViewMode();
+        $('#briefingEditorModal').modal('show');
+    };
+
+    function resetModalLayout() {
+        $('#briefingEditorModal .col-md-3').show();
+        $('#briefingEditorModal .col-md-9').removeClass('col-md-12').addClass('col-md-9');
+        $('#briefingEditorModal .card-header .badge').parent().show();
+        $('#fieldLength, #fieldWidth, #applyFieldSize').prop('disabled', false);
+        $('[data-element]').prop('disabled', false);
+        $('#clearCanvas').prop('disabled', false);
+        $('#zoomIn, #zoomOut').prop('disabled', false);
+        $('.btn-secondary:contains("Закрыть")').text('Отмена');
+        $('.btn-secondary:contains("Вернуться")').text('Отмена');
+    }
+
+    function adjustCanvasSize() {
+        if (canvas) {
+            const container = canvas.wrapperEl.parentElement;
+            if (container) {
+                const interval = 5; 
+                const minWidth = fieldWidth * CELL_SIZE + 60; 
+                const minHeight = fieldLength * CELL_SIZE + 40; 
+                const width = Math.max(container.clientWidth, minWidth);
+                const height = Math.max(container.clientHeight, minHeight);
+                console.log('adjustCanvasSize: container', container.clientWidth, container.clientHeight, 'min', minWidth, minHeight, 'set', width, height);
+                canvas.setDimensions({ width: width, height: height });
+                canvas.renderAll();
+            }
+        }
+    }
+
+    function exportToPNG() {
+        if (!canvas) {
+            console.warn('Canvas not initialized');
+            return;
+        }
+        const width = fieldWidth * CELL_SIZE;
+        const height = fieldLength * CELL_SIZE;
+        const dataURL = canvas.toDataURL({
+            format: 'png',
+            left: 0,
+            top: 0,
+            width: width,
+            height: height,
+            multiplier: 1
+        });
+        const now = new Date();
+        const filename = 'briefing_' + now.toISOString().slice(0,10).replace(/-/g, '') + '_' +
+                         now.getHours().toString().padStart(2,'0') +
+                         now.getMinutes().toString().padStart(2,'0') + '.png';
+        const link = document.createElement('a');
+        link.download = filename;
+        link.href = dataURL;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        console.log('Exported PNG (cropped to field):', filename);
+    }
+
+    function prepareModalForViewMode() {
+        if (isViewMode) {
+            $('.modal-title').text('Просмотр брифинга упражнения');
+            $('#saveBriefing').hide();
+            $('#deleteBriefing').show();
+            $('.btn-secondary:contains("Отмена")').text('Вернуться');
+            $('#fieldLength, #fieldWidth, #applyFieldSize').prop('disabled', true);
+            $('[data-element]').prop('disabled', true);
+            $('#clearCanvas').prop('disabled', true);
+            $('#zoomIn, #zoomOut').prop('disabled', false); 
+            
+            $('.col-md-3').hide();
+            $('.col-md-9').removeClass('col-md-9').addClass('col-md-12');
+            $('.card-header .badge, #zoomIn, #zoomOut').hide();
+        } else {
+            $('.modal-title').text('Редактор брифинга упражнения');
+            $('#saveBriefing').show();
+            $('#deleteBriefing').hide();
+            $('.btn-secondary:contains("Отмена")').text('Отмена');
+            $('#fieldLength, #fieldWidth, #applyFieldSize').prop('disabled', false);
+            $('[data-element]').prop('disabled', false);
+            $('#clearCanvas').prop('disabled', false);
+            $('#zoomIn, #zoomOut').prop('disabled', false);
+            $('.col-md-3').show();
+            $('.col-md-9').removeClass('col-md-12').addClass('col-md-9');
+            $('.card-header .badge, #zoomIn, #zoomOut').show();
+        }
+        setTimeout(adjustCanvasSize, 10);
+    }
+
+    $(document).on('click', '.briefing-add-btn, .briefing-edit-btn', function () {
+        console.log('Add/Edit briefing clicked (delegated)', $(this).data());
+        const stageId = $(this).data('stage-id');
+        const stageType = $(this).data('stage-type');
+        if (typeof openBriefingEditor === 'function') {
+            openBriefingEditor(stageId, stageType, false);
+        } else {
+            console.error('openBriefingEditor is not defined');
+            alert('Функция редактора не загружена. Обновите страницу.');
+        }
+    });
+
+    $(document).on('click', '.briefing-view-btn', function () {
+        console.log('View briefing clicked (delegated)', $(this).data());
+        const stageId = $(this).data('stage-id');
+        const stageType = $(this).data('stage-type');
+        if (typeof openBriefingEditor === 'function') {
+            openBriefingEditor(stageId, stageType, true);
+        } else {
+            console.error('openBriefingEditor is not defined');
+            alert('Функция редактора не загружена. Обновите страницу.');
+        }
+    });
+</script>
