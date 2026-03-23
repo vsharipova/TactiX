@@ -44,11 +44,11 @@ namespace TactiX
 
             var app = builder.Build();
 
-            // using (var scope = app.Services.CreateScope())
-            // {
-            //     var db = scope.ServiceProvider.GetRequiredService<TactiXDB>();
-            //     await db.Database.MigrateAsync();
-            // }
+            using (var scope = app.Services.CreateScope())
+           {
+                var db = scope.ServiceProvider.GetRequiredService<TactiXDB>();
+                 await db.Database.MigrateAsync();
+            }
 
             if (!app.Environment.IsDevelopment())
             {
